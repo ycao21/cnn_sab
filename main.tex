@@ -82,7 +82,7 @@
 \setcopyright{cc}
 \setcctype{by}
 \acmConference[SIGIR '26]{Proceedings of the ACM Web Conference 2026}{April 13--17, 2026}{Dubai, United Arab Emirates}
-\acmBooktitle{Proceedings of the ACM Web Conference 2026 (WWW '26), April 13--17, 2026, Dubai, United Arab Emirates}
+% \acmBooktitle{Proceedings of}
 \acmPrice{}
 \acmDOI{xxxxxxxxxxx}
 \acmISBN{xxxxxxxxxxxx}
@@ -94,7 +94,8 @@
 
 
 \usepackage{multirow}
-\usepackage{graphicx} % Add this line in the preamble
+\usepackage{graphicx}
+\usepackage{enumitem}
 
 % % COMMENTS
 \newif\ifcomment
@@ -147,7 +148,7 @@
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-\title{Hierarchical Convolutional Temporal-Set Modeling for Large-Scale Next Basket Recommendation}
+\title{CASE: Cadence-Aware Set Encoding for Large-Scale Next Basket Repurchase Recommendation}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -229,9 +230,7 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-
-Next basket recommendation (NBR) in retail systems is fundamentally a timing problem: users repurchase items according to recurring cadence patterns, while many existing approaches focus primarily on basket transitions or item co-occurrence. Sequence-based NBR models treat baskets as ordered events and largely ignore real calendar time, limiting their ability to capture stable consumption rhythms. More recent temporal models introduce personalized filters but incur substantial per-user parameterization and quadratic interaction costs. We propose a hierarchical framework that separates item-level temporal cadence modeling from user-level purchase-set structure. The model encodes recurring repurchase patterns over fixed calendar horizons using shared convolutional filters and aggregates item representations through induced set attention to capture cross-item dependencies. Evaluated offline on over 10 million active users and 500K items, the approach achieves a consistent ~2\% lift in Recall@K over the deployed production system while maintaining scalable batch inference. These results demonstrate that explicitly modeling cadence within a scalable hierarchical architecture yields measurable gains in industrial NBR systems.
-
+Repurchase prediction is the dominant signal in large-scale retail recommendation: most items in a user's next basket have been purchased before, and their timing follows a stable personal cadence. Yet most next basket recommendation (NBR) models frame the problem as a sequence of discrete basket events indexed by visit count, which cannot represent elapsed calendar time or adapt scores between transactions. Models that do capture calendar-time cadence rely on per-user hypernetworks to generate personalized filters, incurring parameterization costs that prohibit deployment at scale. We present CASE (Cadence-Aware Set Encoding), which decouples item-level temporal cadence encoding from cross-item set modeling. CASE applies shared multi-scale convolutional filters over a fixed calendar horizon to capture recurring repurchase rhythms, and uses induced set attention to model cross-item dependencies --- without per-user parameters. Evaluated against a deployed production system on over 10 million users and 500K items, CASE achieves up to 14\% relative Recall lift at $K{=}1$ and 8\% at $K{=}10$, demonstrating that scalable cadence-aware modeling yields measurable gains in industrial NBR.
 \end{abstract}
 
 %%
@@ -272,7 +271,7 @@ Next basket recommendation (NBR) in retail systems is fundamentally a timing pro
 %%
 %% Keywords. The author(s) should pick words that accurately describe
 %% the work being presented. Separate the keywords with commas.
-\keywords{Temporal Set, Sequence Modeling, Next Basket Recommendation}
+\keywords{Cadence Modeling, Next Basket Recommendation, Sequential Modeling}
 %% A "teaser" image appears between the author and affiliation
 %% information and the body of the document, and typically spans the
 %% page.
@@ -296,25 +295,36 @@ Next basket recommendation (NBR) in retail systems is fundamentally a timing pro
     \label{fig:diagram}
 \end{figure*}
 
-Next basket recommendation (NBR) is a core capability in large-scale retail and grocery platforms, directly influencing customer retention, basket size, and replenishment efficiency. Unlike traditional item recommendation tasks that emphasize preference discovery, NBR primarily concerns repurchase behavior: predicting which previously purchased items a user is likely to need next. The key challenge lies in the interplay between recurring consumption rhythms and cross-item dependencies within a user’s purchase history. In real-world settings, purchase likelihood is strongly governed by calendar time and item-specific cadence (e.g., weekly staples or monthly replenishment), while user browsing and recommendation exposure occur continuously between orders. Existing academic formulations often model baskets as discrete ordered events, which limits their ability to capture elapsed-time dynamics and to adapt recommendations as time passes without new transactions. Bridging this gap between event-driven modeling and time-aware production systems remains an open challenge for large-scale NBR. \YC{not good}
+In large-scale grocery and retail platforms, the majority of items in a user’s next basket have been purchased before. Repurchase timing follows item-specific cadence --- staples weekly, household goods monthly --- and accurate timing directly drives customer experience: recommend too early and suggestions feel irrelevant; too late and the item may already be in the cart from a competing channel. This makes next basket repurchase recommendation (NBRR) a central problem in production NBR systems, where the goal is to predict which previously purchased items a user needs next, and when.
 
+Most neural NBRR methods model user history as an ordered sequence of basket \emph{events}, where time is represented implicitly by basket index rather than calendar days~\cite{yu2020predicting,ranjan2025scalable}. Predictions are updated only when a new transaction is observed, and models cannot reason about elapsed time between visits. This basket-index formulation is a poor fit for production: scores do not evolve between transactions, and the model has no mechanism to distinguish a user who is 3 days into a 7-day repurchase cycle from one who is 6 days in.
 
-% \begin{figure}[!htbp]
-%     \centering
-%     \includegraphics[width=1\linewidth]{figure1.jpg}
-%     \caption{Illustration...}
-%     \label{fig:illustration}
-% \end{figure}
+Recent work showed that modeling purchase history as a calendar-time signal and learning per-item repurchase cycles via convolution substantially improves NBRR~\cite{katz2024personalized}. However, that approach generates personalized filters for each user--item pair via a hypernetwork and refines scores through pairwise item attention --- both quadratic in the user’s history size and infeasible at production scale (tens of millions of users, hundreds of thousands of items).
 
-\YC{Related work below, we might keep it in introduction since only 4 pages, will make them concise} TIFU-KNN is a widely adopted non-neural baseline for basket recommendation that leverages similarity between recent baskets and historical user patterns (TIFU-KNN). By aggregating temporal features with user-level nearest neighbor search, TIFU-KNN achieves strong empirical performance and remains competitive in practice. However, its reliance on KNN retrieval introduces scalability challenges in large production environments, particularly when applied to tens of millions of users and large item catalogs. In addition, like other basket-index-based approaches, it does not explicitly model fine-grained calendar-time dynamics at the item level.
+We propose \textbf{CASE} (\textbf{C}adence-\textbf{A}ware \textbf{S}et \textbf{E}ncoding), which preserves the calendar-time cadence insight while remaining production-scalable. CASE uses \emph{shared} multi-scale convolutional filters --- spanning weekly, biweekly, monthly, seasonal, and trend horizons --- to encode recurring repurchase patterns without per-user parameterization. Cross-item dependencies within a user’s purchase history are captured through induced set attention blocks (ISAB)~\cite{lee2019set}, which reduce O($N^2$) pairwise attention to O($N{\cdot}K$) via a small set of learned induced points. Our contributions are:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=2pt]
+  \item We identify the basket-index formulation as a fundamental limitation of existing NBRR for production deployment, and motivate calendar-time cadence as the appropriate inductive bias.
+  \item We propose CASE, combining shared multi-scale CNN cadence encoding with induced set attention, requiring no per-user parameters and supporting efficient batch inference.
+  \item We demonstrate up to 14\% relative Recall lift over a deployed production system on 10M+ users and 500K items, and consistent gains across three public benchmarks.
+\end{itemize}
 
-Early neural approaches to next basket recommendation (NBR) model user history as an ordered sequence of baskets and learn transition dynamics across basket indices. Methods such as DNN-TSP and SFCN-TSP treat baskets as discrete events and focus on modeling inter-basket item transitions or sequential co-occurrence patterns (DNN-TSP; SFCN-TSP). In these formulations, time is represented implicitly by basket position rather than real calendar time. As a result, the elapsed days between orders are not incorporated into the model, and predictions are typically updated only when a new basket is observed. While effective at capturing short-term transitions, such event-driven formulations do not explicitly model stable repurchase cadence tied to calendar time.
+\section{CASE: Model Architecture}
+\label{sec:model}
 
-More recent work models repurchase behavior using convolutional architectures over user–item temporal matrices defined on real time horizons. In particular, hypernetwork-based approaches generate personalized convolution filters for each user–item pair to capture individual repurchase cycles (CNN-HN). These models explicitly incorporate calendar time and can learn flexible temporal decay and periodic patterns. However, they require per-user parameter generation and often employ pairwise item interaction refinement, which increases computational complexity and may limit scalability in large production systems.
+\textbf{Problem Formulation.}
+Given user $u$ with purchase history $\mathcal{I}_u = \{i_1, \ldots, i_N\}$ (the set of $N$ distinct items purchased in the past $T$ calendar days), the NBRR task is to rank items in $\mathcal{I}_u$ by their likelihood of appearing in the next basket. We restrict recommendations to $\mathcal{I}_u$ since repurchase items dominate next-basket composition in grocery and retail settings.
 
-In contrast to sequence-based and neighborhood-based approaches, our framework models purchase behavior on a fixed calendar horizon, enabling recommendation scores to evolve continuously with elapsed time rather than only at basket events. Compared to hypernetwork-based temporal models, we separate item-level temporal cadence encoding from user-level purchase-set interaction modeling within a hierarchical architecture. We employ shared multi-scale convolutional filters to capture recurring repurchase rhythms and induced set attention to model cross-item dependencies, avoiding per-user filter generation and quadratic item interaction matrices. This design allows scalable batch inference while explicitly incorporating calendar-time dynamics in large-scale NBR systems.
+\textbf{Calendar-Time History Representation.}
+For each item $i \in \mathcal{I}_u$, we construct a binary purchase indicator $\mathbf{h}_i \in \{0,1\}^T$, where $h_{i,t} = 1$ if item $i$ was purchased on calendar day $t$ within a rolling $T{=}364$-day window. Unlike basket-index representations, this encoding directly exposes the elapsed time between purchases, enabling the model to detect item-level periodicity (e.g., a weekly-purchased item vs.\ a monthly one). Each item is additionally assigned a learned embedding $\mathbf{e}_i \in \mathbb{R}^{d_e}$ from a shared embedding table.
 
-In this work, we...
+\textbf{Multi-Scale Temporal CNN.}
+We apply a shared multi-scale 1D CNN to $\mathbf{h}_i$ to capture repurchase rhythms at five temporal resolutions: weekly ($k{=}7$), biweekly ($k{=}14$), monthly ($k{=}28$), seasonal ($k{=}91$), and trend ($k{=}182$) days. For each scale $k$, a single-channel Conv1d with stride $k$ produces $\lfloor T/k \rfloor$ non-overlapping window activations; all scales are concatenated and projected through two linear layers to a $d_c$-dimensional temporal feature $\mathbf{c}_i = \text{CNN}(\mathbf{h}_i) \in \mathbb{R}^{d_c}$. Crucially, all CNN filters are \emph{shared} across users, contrasting with CNN-HN~\cite{katz2024personalized} which generates personalized filters per user--item pair via a hypernetwork. The combined representation is $\mathbf{x}_i = [\mathbf{e}_i \,\|\, \mathbf{c}_i] \in \mathbb{R}^{d_e + d_c}$.
+
+\textbf{Induced Set Attention Encoding.}
+Items within $\mathcal{I}_u$ are an unordered set, and co-purchase patterns across items provide additional repurchase signals. We model these dependencies with an encoder based on Induced Set Attention Blocks (ISAB)~\cite{lee2019set}, which maps $\{\mathbf{x}_i\}_{i \in \mathcal{I}_u}$ to enriched representations $\{\mathbf{z}_i\}$ while remaining permutation-equivariant. ISAB introduces $K$ learnable \emph{induced points} as an intermediate attention target, reducing full pairwise attention from $O(N^2)$ to $O(N{\cdot}K)$. We stack two ISAB layers ($K{=}32$ induced points, $H{=}4$ attention heads, with layer normalization), yielding $\mathbf{z}_i \in \mathbb{R}^{d_h}$ for each item.
+
+\textbf{Scoring and Training.}
+Each $\mathbf{z}_i$ is passed through a two-layer MLP scorer to produce a scalar repurchase score $s_i$, and items are ranked by $s_i$ at inference. The model is trained with binary cross-entropy: for each observed basket transition, items in the next basket that also appear in $\mathcal{I}_u$ are positives; the remaining items in $\mathcal{I}_u$ are negatives. CASE has no per-user parameters --- the CNN filters, item embeddings, ISAB induced points, and scorer are all shared across users --- enabling batch inference that scales to millions of users with $O(1)$ additional memory per user.
 
 \section{Experimental Setting}
 
@@ -405,7 +415,7 @@ The results of our experiments provide a clear empirical view ...
 & -- & -- & --
 & -- & -- & --
 & -- & -- & -- \\
-& Ours
+& CASE (Ours)
 & \textbf{0.5339} & \textbf{0.1282} & \textbf{0.5339}
 & \textbf{0.4508} & \textbf{0.2896} & \textbf{0.5072}
 & \textbf{0.3971} & \textbf{0.3937} & \textbf{0.5040}
@@ -429,7 +439,7 @@ The results of our experiments provide a clear empirical view ...
 & -- & -- & --
 & -- & -- & --
 & -- & -- & -- \\
-& Ours
+& CASE (Ours)
 & \textbf{0.2606} & \textbf{0.1708} & \textbf{0.2606}
 & \textbf{0.1832} & \textbf{0.3306} & \textbf{0.3071}
 & \textbf{0.1519} & \textbf{0.4318} & \textbf{0.3441}
@@ -453,7 +463,7 @@ The results of our experiments provide a clear empirical view ...
 & -- & -- & --
 & -- & -- & --
 & -- & -- & -- \\
-& Ours
+& CASE (Ours)
 & \textbf{0.3906} & \textbf{0.3300} & \textbf{0.3906}
 & \textbf{0.2512} & \textbf{0.6120} & \textbf{0.5094}
 & \textbf{0.1845} & \textbf{0.7236} & \textbf{0.5407}
@@ -477,11 +487,11 @@ The results of our experiments provide a clear empirical view ...
 & -- & -- & --
 & -- & -- & --
 & -- & -- & -- \\
-& Ours
-& \textbf{0.3724} & \textbf{0.0991} & \textbf{0.3724}
-& \textbf{0.3015} & \textbf{0.1913} & \textbf{0.3530}
-& \textbf{0.2563} & \textbf{0.2492} & \textbf{0.3450}
-& \textbf{0.1980} & \textbf{0.3423} & \textbf{0.3460} \\
+& CASE (Ours)
+& \textbf{0.3849} & \textbf{0.1004} & \textbf{0.3849}
+& \textbf{--} & \textbf{--} & \textbf{--} % TODO: K=3 not in ablation, needs re-run
+& \textbf{0.2593} & \textbf{0.2535} & \textbf{0.3495}
+& \textbf{0.2009} & \textbf{0.3438} & \textbf{0.3500} \\
 \bottomrule
 \end{tabular}
 \label{tab:topk_grouped_results}

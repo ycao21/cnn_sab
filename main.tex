@@ -359,8 +359,6 @@ We report Precision@$K$, Recall@$K$, and NDCG@$K$ for $K \in \{1, 3, 5, 10\}$. C
 
 \section{Experimental Results}
 
-\subsection{Main Results}
-
 % Style like your screenshot: dataset blocks + grouped K headers.
 % Requires: \usepackage{booktabs,multirow}
 % Optional: \usepackage{array} for better column spacing
@@ -479,6 +477,8 @@ We report Precision@$K$, Recall@$K$, and NDCG@$K$ for $K \in \{1, 3, 5, 10\}$. C
 \end{tabular}
 \label{tab:topk_grouped_results}
 \end{table*}
+
+\subsection{Main Results}
 
 Table~\ref{tab:topk_grouped_results} shows results across all datasets. CASE outperforms all baselines on every public dataset at every $K$. The gains are most pronounced at $K{=}1$: on Instacart CASE improves Precision@1 from 0.502 (PersonalTop) to 0.534 (+6.4\%), and on DC from 0.343 to 0.391 (+14.0\%). PersonalTop ranks second in most settings, reflecting the strong frequency signal in repurchase behavior; however, it cannot distinguish items that are due for repurchase from those that are not, whereas CASE's calendar-time encoding captures precisely this timing distinction. DNNTSP, despite using learned item co-occurrence, underperforms PersonalTop at low $K$ on Instacart and DC, where cadence timing is decisive. On the Proprietary dataset, CASE consistently outperforms PersonalTop across all $K$ values, and delivers a 14\% relative Precision and Recall lift over the deployed production system at $K{=}1$ (Table~\ref{tab:lift}).
 

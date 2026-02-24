@@ -1,0 +1,654 @@
+%%
+%% This is file `sample-sigconf.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `all,proceedings,bibtex,sigconf')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-sigconf.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%%
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+%%
+%% The first command in your LaTeX source must be the \documentclass
+%% command.
+%%
+%% For submission and review of your manuscript please change the
+%% command to \documentclass[manuscript, screen, review]{acmart}.
+%%
+%% When submitting camera ready or to TAPS, please change the command
+%% to \documentclass[sigconf]{acmart} or whichever template is required
+%% for your publication.
+%%
+%%
+
+% \documentclass[sigconf]{acmart}
+\documentclass[sigconf,review]{acmart}
+
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+% \setcopyright{acmlicensed}
+% \copyrightyear{2018}
+% \acmYear{2018}
+% \acmDOI{XXXXXXX.XXXXXXX}
+%% These commands are for a PROCEEDINGS abstract or paper.
+% \acmConference[Conference acronym 'XX]{Make sure to enter the correct
+%   conference title from your rights confirmation email}{June 03--05,
+%   2018}{Woodstock, NY}
+%%
+%%  Uncomment \acmBooktitle if the title of the proceedings is different
+%%  from ``Proceedings of ...''!
+%%
+%%\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+%%  June 03--05, 2018, Woodstock, NY}
+% \acmISBN{978-1-4503-XXXX-X/2018/06}
+
+% \documentclass[sigconf]{acmart}
+
+\copyrightyear{2026}
+\acmYear{2026}
+\setcopyright{cc}
+\setcctype{by}
+\acmConference[SIGIR '26]{Proceedings of the ACM Web Conference 2026}{April 13--17, 2026}{Dubai, United Arab Emirates}
+\acmBooktitle{Proceedings of the ACM Web Conference 2026 (WWW '26), April 13--17, 2026, Dubai, United Arab Emirates}
+\acmPrice{}
+\acmDOI{xxxxxxxxxxx}
+\acmISBN{xxxxxxxxxxxx}
+
+% 1 Authors, replace the red X's with your assigned DOI string during the rightsreview eform process.
+% 2 Your DOI link will become active when the proceedings appears in the DL.
+% 3 Retain the DOI string between the curly braces for uploading your presentation video.
+
+
+
+\usepackage{multirow}
+\usepackage{graphicx} % Add this line in the preamble
+
+% % COMMENTS
+\newif\ifcomment
+\commenttrue % comment out to hide comments
+\providecommand{\YC}[1]{\ifcomment{\small \color{blue} [YC: #1]}\fi} %Yanan
+\providecommand{\AR}[1]{\ifcomment{\small \color{red} [AR: #1]}\fi} %Ashish
+% \providecommand{\KZ}[1]{\ifcomment{\small \color{teal} [KZ: #1]}\fi} %
+% \providecommand{\FF}[1]{\ifcomment{\small \color{olive} [FF: #1]}\fi} %
+% \providecommand{\LMo}[1]{\ifcomment{\small \color{orange} [LMo: #1]}\fi} %
+% \providecommand{\MD}[1]{\ifcomment{\small \color{cyan} [MD: #1]}\fi} %
+
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% For managing citations, it is recommended to use bibliography
+%% files in BibTeX format.
+%%
+%% You can then either use BibTeX with the ACM-Reference-Format style,
+%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
+%% support for advanced citation of software artefact from the
+%% biblatex-software package, also separately available on CTAN.
+%%
+%% Look at the sample-*-biblatex.tex files for templates showcasing
+%% the biblatex styles.
+%%
+
+%%
+%% The majority of ACM publications use numbered citations and
+%% references.  The command \citestyle{authoryear} switches to the
+%% "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
+%% citations and references.
+%% Uncommenting
+%% the next command will enable that style.
+%%\citestyle{acmauthoryear}
+
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{Hierarchical Convolutional Temporal-Set Modeling for Large-Scale Next Basket Recommendation}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+
+% \author{Anonymous Author(s)}
+% \date{}
+% \settopmatter{authorsperrow=4}
+
+\author{Yanan Cao}
+\authornote{Highlighted authors contributed equally to this research.}
+% \orcid{1234-5678-9012}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{yanan.cao@walmart.com}
+
+\author{Ashish Ranjan}
+\authornotemark[1]
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{ashish.ranjan0@walmart.com}
+
+\author{Sinduja Subramaniam}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{sinduja.subramaniam@walmart.com}
+
+\author{Evren Korpeoglu}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{ekorpeoglu@walmart.com}
+
+\author{Kaushiki Nag}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{kaushiki.nag@walmart.com}
+
+\author{Kannan Achan}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{kannan.achan@walmart.com}
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+\renewcommand{\shortauthors}{Author et al.}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+
+Next basket recommendation (NBR) in retail systems is fundamentally a timing problem: users repurchase items according to recurring cadence patterns, while many existing approaches focus primarily on basket transitions or item co-occurrence. Sequence-based NBR models treat baskets as ordered events and largely ignore real calendar time, limiting their ability to capture stable consumption rhythms. More recent temporal models introduce personalized filters but incur substantial per-user parameterization and quadratic interaction costs. We propose a hierarchical framework that separates item-level temporal cadence modeling from user-level purchase-set structure. The model encodes recurring repurchase patterns over fixed calendar horizons using shared convolutional filters and aggregates item representations through induced set attention to capture cross-item dependencies. Evaluated offline on over 10 million active users and 500K items, the approach achieves a consistent ~2\% lift in Recall@K over the deployed production system while maintaining scalable batch inference. These results demonstrate that explicitly modeling cadence within a scalable hierarchical architecture yields measurable gains in industrial NBR systems.
+
+\end{abstract}
+
+%%
+%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
+%% Please copy and paste the code instead of the example below.
+%%
+% \begin{CCSXML}
+% <ccs2012>
+%  <concept>
+%   <concept_id>00000000.0000000.0000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>500</concept_significance>
+%  </concept>
+%  <concept>
+%   <concept_id>00000000.00000000.00000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>300</concept_significance>
+%  </concept>
+%  <concept>
+%   <concept_id>00000000.00000000.00000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>100</concept_significance>
+%  </concept>
+%  <concept>
+%   <concept_id>00000000.00000000.00000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>100</concept_significance>
+%  </concept>
+% </ccs2012>
+% \end{CCSXML}
+
+\ccsdesc[500]{Computing methodologies~Artificial intelligence}
+\ccsdesc[500]{Computing methodologies~Machine learning}
+\ccsdesc[500]{Computing methodologies~Temporal reasoning}
+% \ccsdesc{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+% \ccsdesc[100]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{Temporal Set, Sequence Modeling, Next Basket Recommendation}
+%% A "teaser" image appears between the author and affiliation
+%% information and the body of the document, and typically spans the
+%% page.
+
+% \received{20 February 2007}
+% \received[revised]{12 March 2009}
+% \received[accepted]{5 June 2009}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\section{Introduction}
+
+
+\begin{figure*}[t]
+    \centering    
+    \includegraphics[width=1\linewidth]{figure1.png}
+    \caption{diagram}
+    \label{fig:diagram}
+\end{figure*}
+
+Next basket recommendation (NBR) is a core capability in large-scale retail and grocery platforms, directly influencing customer retention, basket size, and replenishment efficiency. Unlike traditional item recommendation tasks that emphasize preference discovery, NBR primarily concerns repurchase behavior: predicting which previously purchased items a user is likely to need next. The key challenge lies in the interplay between recurring consumption rhythms and cross-item dependencies within a user’s purchase history. In real-world settings, purchase likelihood is strongly governed by calendar time and item-specific cadence (e.g., weekly staples or monthly replenishment), while user browsing and recommendation exposure occur continuously between orders. Existing academic formulations often model baskets as discrete ordered events, which limits their ability to capture elapsed-time dynamics and to adapt recommendations as time passes without new transactions. Bridging this gap between event-driven modeling and time-aware production systems remains an open challenge for large-scale NBR. \YC{not good}
+
+
+% \begin{figure}[!htbp]
+%     \centering
+%     \includegraphics[width=1\linewidth]{figure1.jpg}
+%     \caption{Illustration...}
+%     \label{fig:illustration}
+% \end{figure}
+
+\YC{Related work below, we might keep it in introduction since only 4 pages, will make them concise} TIFU-KNN is a widely adopted non-neural baseline for basket recommendation that leverages similarity between recent baskets and historical user patterns (TIFU-KNN). By aggregating temporal features with user-level nearest neighbor search, TIFU-KNN achieves strong empirical performance and remains competitive in practice. However, its reliance on KNN retrieval introduces scalability challenges in large production environments, particularly when applied to tens of millions of users and large item catalogs. In addition, like other basket-index-based approaches, it does not explicitly model fine-grained calendar-time dynamics at the item level.
+
+Early neural approaches to next basket recommendation (NBR) model user history as an ordered sequence of baskets and learn transition dynamics across basket indices. Methods such as DNN-TSP and SFCN-TSP treat baskets as discrete events and focus on modeling inter-basket item transitions or sequential co-occurrence patterns (DNN-TSP; SFCN-TSP). In these formulations, time is represented implicitly by basket position rather than real calendar time. As a result, the elapsed days between orders are not incorporated into the model, and predictions are typically updated only when a new basket is observed. While effective at capturing short-term transitions, such event-driven formulations do not explicitly model stable repurchase cadence tied to calendar time.
+
+More recent work models repurchase behavior using convolutional architectures over user–item temporal matrices defined on real time horizons. In particular, hypernetwork-based approaches generate personalized convolution filters for each user–item pair to capture individual repurchase cycles (CNN-HN). These models explicitly incorporate calendar time and can learn flexible temporal decay and periodic patterns. However, they require per-user parameter generation and often employ pairwise item interaction refinement, which increases computational complexity and may limit scalability in large production systems.
+
+In contrast to sequence-based and neighborhood-based approaches, our framework models purchase behavior on a fixed calendar horizon, enabling recommendation scores to evolve continuously with elapsed time rather than only at basket events. Compared to hypernetwork-based temporal models, we separate item-level temporal cadence encoding from user-level purchase-set interaction modeling within a hierarchical architecture. We employ shared multi-scale convolutional filters to capture recurring repurchase rhythms and induced set attention to model cross-item dependencies, avoiding per-user filter generation and quadratic item interaction matrices. This design allows scalable batch inference while explicitly incorporating calendar-time dynamics in large-scale NBR systems.
+
+In this work, we...
+
+\section{Experimental Setting}
+
+\subsection{Datasets}
+
+We evaluate our approach on two real-world e-commerce datasets: proprietary grocery data and the public Instacart dataset \cite{yasserh_instacart_2017}. In both datasets, user-category pairs with fewer than five purchases are excluded, and intervals longer than 20 days are removed. The proprietary dataset contains 5{,}780 users across 12 product types (1.03 types/user average) with over 110{,}000 purchase records. The Instacart dataset includes 2{,}661 users across 10 categories (1.87 categories/user average) with roughly 194{,}000 orders. Both datasets span diverse categories (Fresh Produce, Dairy, Packaged Goods, Snacks) capturing variability in purchase periodicity and seasonality for temporal reasoning comparison.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Dataset statistics.}
+\begin{tabular}{lrrrrr}
+\toprule
+Dataset & \#Users & \#Items & Avg.Bskt & Avg.Size & \#Baskets \\
+\midrule
+Instacart & 18,739 & 37,522 & 10.07 & 16.70 & 312,986 \\
+TaFeng & 7,227 & 18,703 & 6.58 & 7.52 & 54,342 \\
+DC & 123,935 & 852 & 1.60 & 14.16 & 1,754,890 \\
+Proprietary & 10,308 & 88,812 & 11.72 & 43.00 & 443,232 \\
+\bottomrule
+\end{tabular}
+\label{tab:dataset_stats}
+\end{table}
+
+\subsection{Models}
+We evaluate ...
+
+% \textbf{LLM Models.}
+% We evaluate several state-of-the-art LLMs to examine their ability to predict temporal purchase intervals from structured behavioral data. Specifically, we consider GPT-4o, Gemini-2.5 Pro, and Claude 3.5 Sonnet, prompted under systematically varied context levels to study how contextual richness influences temporal reasoning. As illustrated in Figure 2, each model receives a textual description of a user’s past purchase events and is asked to predict the next inter-purchase interval in days. To control the amount of information provided, we design three prompting levels, allowing us to test how much information an LLM needs for accurate timing predictions. Zero-context isolates pure numeric reasoning from intervals alone. Medium-context adds product descriptions and basic statistics to see whether product metadata or simple statistics help. High-context includes richer behavioral signals to evaluate whether LLMs benefit from features commonly used in traditional forecasting. This progression provides a controlled way to assess the impact of different information levels. All model outputs are parsed into numeric predictions and evaluated under a unified scoring framework. We focused on zero-shot (instead of few-shot) evaluation as our is goal is to mainly assess LLM's inherent temporal reasoning capabilities without task-specific guidance, leaving advanced prompt tuning strategies to future work.
+
+% \begin{figure}[!htbp]
+%     \centering
+%     \includegraphics[width=1\linewidth]{figure2.png}
+%     \caption{Prompt designs for three context levels: Zero (historical intervals only), Medium (product metadata, summary statistics), and High (recency features, user lifecycle information).}
+%     \label{fig:prompts}
+% \end{figure}
+
+%Prompt designs for three context levels: Zero (intervals only), Medium (product metadata, summary statistics), and High (recency features, user lifecycle information).
+
+%Overview of the prompt designs used for evaluating LLM reasoning under three context levels: Zero Context (historical intervals only), Medium Context (product metadata and basic summary statistics), and High Context (recency features and user-level lifecycle information).
+
+
+% \textbf{ML Models.}
+% To establish structured-data baselines, we implement classical ML models that learn temporal dependencies from numerical features, such as historical inter-purchase intervals, user recency and category-level purchase frequency. We trained three representative machine learning models in industry that are commonly used (RandomForest regression, XGBoost regression, and Multi-layer deep neural network), optimized using median quantile loss to better accommodate the discrete distribution of the target variable and align with business metrics for next-purchase prediction in practice. Our experiments demonstrate that models trained with quantile loss achieves superior performance across both datasets. This structured setup reflects the dominant paradigm in tabular and demand-forecasting systems, providing a grounded benchmark for comparison against LLM-based interval reasoning.
+
+% \textbf{Statistical Models.}
+% We further include lightweight statistical estimators that capture baseline temporal regularities without learning. These include the mean, median, and exponential-moving-average (EMA) of previous intervals, each computed at user and product type level. Such models are widely used in retail analytics and serve as interpretable lower-bound baselines that reveal how much improvement more sophisticated learners or reasoning-based systems can realistically achieve.
+
+\section{Experimental Results}
+The results of our experiments provide a clear empirical view ...
+
+\subsection{Main Results}
+
+% Style like your screenshot: dataset blocks + grouped K headers.
+% Requires: \usepackage{booktabs,multirow}
+% Optional: \usepackage{array} for better column spacing
+\begin{table*}[t]
+\centering
+\small
+\caption{Comparisons with different methods on Top-$K$ performance (repurchase next-basket recommendation). Higher is better. Best results within each dataset and metric@K are in \textbf{bold}; second best are \underline{underlined}.}
+\begin{tabular}{@{}ll|ccc|ccc|ccc|ccc@{}}
+\toprule
+\multirow{2}{*}{Datasets} & \multirow{2}{*}{Methods}
+& \multicolumn{3}{c|}{$K{=}1$}
+& \multicolumn{3}{c|}{$K{=}3$}
+& \multicolumn{3}{c|}{$K{=}5$}
+& \multicolumn{3}{c}{$K{=}10$} \\
+& & Prec & Rec & NDCG
+  & Prec & Rec & NDCG
+  & Prec & Rec & NDCG
+  & Prec & Rec & NDCG \\
+\midrule
+
+% ========================= Instacart =========================
+\multirow{4}{*}{Instacart}
+& PersonalTop
+& \underline{0.5019} & \underline{0.1173} & \underline{0.5019}
+& \underline{0.4139} & \underline{0.2593} & \underline{0.4670}
+& \underline{0.3574} & 0.3458 & \underline{0.4556}
+& 0.2819 & 0.4821 & \textbf{0.4671} \\
+& DNNTSP
+& 0.4631 & 0.1025 & 0.4631
+& 0.4002 & 0.2511 & 0.4447
+& 0.3527 & \underline{0.3480} & 0.4427
+& \underline{0.2842} & \underline{0.4943} & 0.4616 \\
+& PIETSP
+& -- & -- & --
+& -- & -- & --
+& -- & -- & --
+& -- & -- & -- \\
+& Ours
+& \textbf{0.5339} & \textbf{0.1282} & \textbf{0.5339}
+& \textbf{0.4508} & \textbf{0.2896} & \textbf{0.5072}
+& \textbf{0.3971} & \textbf{0.3937} & \textbf{0.5040}
+& \textbf{0.3118} & \textbf{0.5397} & \underline{0.5170} \\
+\midrule
+
+% ========================= Ta-Feng =========================
+\multirow{4}{*}{TaFeng}
+& PersonalTop
+& 0.1771 & 0.0988 & 0.1771
+& 0.1363 & 0.2100 & 0.2042
+& 0.1104 & 0.2776 & 0.2263
+& 0.0795 & 0.3839 & 0.2612 \\
+& DNNTSP
+& \underline{0.2387} & \underline{0.1632} & \underline{0.2387}
+& 0.1675 & 0.3196 & 0.2869
+& 0.1406 & 0.4255 & 0.3275
+& 0.1086 & 0.5809 & 0.3739 \\
+& PIETSP
+& -- & -- & --
+& -- & -- & --
+& -- & -- & --
+& -- & -- & -- \\
+& Ours
+& \textbf{0.2606} & \textbf{0.1708} & \textbf{0.2606}
+& \textbf{0.1832} & \textbf{0.3306} & \textbf{0.3071}
+& \textbf{0.1519} & \textbf{0.4318} & \textbf{0.3441}
+& \textbf{0.1131} & \textbf{0.5932} & \textbf{0.3902} \\
+\midrule
+
+% ========================= DC =========================
+\multirow{4}{*}{DC}
+& PersonalTop
+& \underline{0.3434} & \underline{0.2879} & \underline{0.3434}
+& 0.2233 & 0.5424 & 0.4489
+& 0.1672 & 0.6559 & 0.4828
+& 0.1059 & 0.7838 & \underline{0.5000} \\
+& DNNTSP
+& 0.3264 & 0.2685 & 0.3264
+& 0.2269 & 0.5485 & 0.4441
+& 0.1710 & 0.6696 & 0.4790
+& 0.1085 & 0.8057 & 0.4931 \\
+& PIETSP
+& -- & -- & --
+& -- & -- & --
+& -- & -- & --
+& -- & -- & -- \\
+& Ours
+& \textbf{0.3906} & \textbf{0.3300} & \textbf{0.3906}
+& \textbf{0.2512} & \textbf{0.6120} & \textbf{0.5094}
+& \textbf{0.1845} & \textbf{0.7236} & \textbf{0.5407}
+& \textbf{0.1139} & \textbf{0.8446} & \textbf{0.5479} \\
+\midrule
+
+% ========================= Proprietary =========================
+\multirow{4}{*}{Proprietary}
+& PersonalTop
+& \underline{0.3686} & \underline{0.0940} & \underline{0.3686}
+& 0.2744 & 0.1691 & 0.3248
+& 0.2314 & 0.2206 & 0.3151
+& 0.1772 & 0.2981 & 0.3126 \\
+& DNNTSP
+& -- & -- & --
+& -- & -- & --
+& -- & -- & --
+& -- & -- & -- \\
+& PIETSP
+& -- & -- & --
+& -- & -- & --
+& -- & -- & --
+& -- & -- & -- \\
+& Ours
+& \textbf{0.3724} & \textbf{0.0991} & \textbf{0.3724}
+& \textbf{0.3015} & \textbf{0.1913} & \textbf{0.3530}
+& \textbf{0.2563} & \textbf{0.2492} & \textbf{0.3450}
+& \textbf{0.1980} & \textbf{0.3423} & \textbf{0.3460} \\
+\bottomrule
+\end{tabular}
+\label{tab:topk_grouped_results}
+\end{table*}
+
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Ablation study on the Proprietary dataset. Higher is better. Best results per metric@K are in \textbf{bold}; second best are \underline{underlined}.}
+\begin{tabular}{l|ccc|ccc|ccc|ccc}
+\toprule
+\multirow{2}{*}{Model Components}
+& \multicolumn{3}{c|}{$K{=}1$}
+& \multicolumn{3}{c|}{$K{=}5$}
+& \multicolumn{3}{c|}{$K{=}10$}
+& \multicolumn{3}{c}{$K{=}20$} \\
+& Prec & Rec & NDCG
+  & Prec & Rec & NDCG
+  & Prec & Rec & NDCG
+  & Prec & Rec & NDCG \\
+\midrule
+
+CNN w/ Set Attention
+& \underline{0.3849} & \underline{0.1004} & \underline{0.3849}
+& \underline{0.2593} & \textbf{0.2535} & \textbf{0.3495}
+& \textbf{0.2009} & \textbf{0.3438} & \textbf{0.3500}
+& \textbf{0.1488} & \textbf{0.4645} & \textbf{0.3714} \\
+
+  + Set pooling
+& 0.3724 & 0.0991 & 0.3724
+& 0.2563 & 0.2492 & 0.3450
+& \underline{0.1980} & \underline{0.3423} & \underline{0.3460}
+& \underline{0.1445} & \underline{0.4539} & \underline{0.3648} \\
+
+
+CNN w/ Set Perm Mean
+& \textbf{0.3897} & \textbf{0.1038} & \textbf{0.3897}
+& \textbf{0.2597} & \underline{0.2505} & \underline{0.3489}
+& 0.1974 & 0.3353 & 0.3459
+& 0.1433 & 0.4426 & 0.3626 \\
+
+% CNN w/ Set attention Encoder plus pooling
+% & 0.3724 & 0.0991 & 0.3724
+% & 0.2563 & 0.2492 & 0.3450
+% & \underline{0.1980} & \underline{0.3423} & \underline{0.3460}
+% & \underline{0.1445} & \underline{0.4539} & \underline{0.3648} \\
+
+CNN w/o any set encoder
+& 0.3767 & 0.0984 & 0.3767
+& 0.2525 & 0.2455 & 0.3399
+& 0.1974 & 0.3406 & 0.3434
+& 0.1435 & 0.4440 & 0.3598 \\
+
+% No\_SetTran\_PMA
+% & 0.3772 & 0.0993 & 0.3772
+% & 0.2571 & 0.2493 & 0.3450
+% & 0.1977 & 0.3408 & 0.3449
+% & 0.1463 & \underline{0.4567} & \underline{0.3661} \\
+
+Set Attention w/o CNN
+& 0.2226 & 0.0628 & 0.2226
+& 0.1292 & 0.1454 & 0.1872
+& 0.1020 & 0.2092 & 0.1921
+& 0.0754 & 0.2912 & 0.2064 \\
+
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+\begin{table}[t]
+\centering
+\small
+\caption{Relative lift (\%) of the proposed model over the production model.}
+\begin{tabular}{c|ccc}
+\toprule
+K & Precision & Recall & NDCG \\
+\midrule
+1  & +14.11\% & +14.62\% & +14.11\% \\
+5  & +8.63\%  & +9.90\%  & +10.46\% \\
+10 & +6.78\%  & +7.95\%  & +9.40\% \\
+20 & +5.27\%  & +6.32\%  & +8.75\% \\
+\bottomrule
+\end{tabular}
+\label{tab:lift}
+\end{table}
+
+% \begin{table}[!htbp]
+% \centering
+% \caption{Accuracy and error metrics across context levels, with best ML and statistical baselines. Bold values indicate the overall best performance across all models. Underlined values indicate the best among LLMs.}
+% \label{tab:llm_combined_metrics_onecol}
+% \setlength{\tabcolsep}{2pt}
+% \renewcommand{\arraystretch}{0.92}
+% \begin{tabular}{lcccccc}
+% \toprule
+% \multicolumn{1}{c}{\multirow{2}{*}{\textbf{Model}}} &
+% \multicolumn{3}{c}{\textbf{Accuracy Metrics ↑}} &
+% \multicolumn{3}{c}{\textbf{Error Metrics ↓}} \\
+% \cmidrule(lr){2-4}\cmidrule(lr){5-7}
+% & \textbf{TA@0} & \textbf{TA@1} & \textbf{TA@2} &
+% \textbf{RMSE} & \textbf{MAE} & \textbf{MAPE} \\
+% \midrule
+% \multicolumn{7}{c}{\textbf{Proprietary data}} \\
+% \midrule
+% GPT-4o-Z    & 5.75 & 12.72 & 18.65 & 23.66 & 15.50 & 73.03 \\
+% GPT-4o-M   & 6.13 & 13.83 & 19.92 & 22.95 & 14.76 & 66.78 \\
+% GPT-4o-H   & 5.32 & 12.72 & 18.48 & 24.83 & 16.39 & 76.59 \\
+% \midrule
+% Gemini-2.5-Z  & 6.38 & 13.57 & 19.68 & 23.44 & 15.17 & 63.79 \\
+% Gemini-2.5-M  & 6.15 & 13.95 & 19.72 & 23.91 & 15.39 & 67.79 \\
+% Gemini-2.5-H  & 6.20 & 13.42 & 19.25 & 24.20 & 15.66 & 71.38 \\
+% \midrule
+% Claude-3.5-Z & 5.98 & 13.50 & 19.72 & 22.26 & 14.17 & 64.27 \\
+% Claude-3.5-M & 6.55 & 14.58 & \underline{20.97} & \underline{21.93} & \underline{13.85} & \underline{57.45} \\
+% Claude-3.5-H & \underline{6.75} & \underline{14.63} & 20.95 & 22.11 & 14.11 & 59.61 \\
+% \midrule
+% ML Best      & \textbf{9.48} & \textbf{22.98} & \textbf{33.93} & \textbf{9.97} & \textbf{7.18} & \textbf{29.92} \\
+% Stat Best    & 4.42 & 13.15 & 20.32 & 22.46 & 14.25 & 55.41 \\
+% \midrule
+% \multicolumn{7}{c}{\textbf{Instacart data}} \\
+% \midrule
+% GPT-4o-Z   & 6.54 & 15.46 & 22.16 & 30.11 & 16.13 & 77.39 \\
+% GPT-4o-M   & \underline{7.32} & 16.04 & 22.98 & 28.56 & 15.09 & 66.80 \\
+% GPT-4o-H   & 6.00 & 14.12 & 20.12 & 31.05 & 17.01 & 84.03 \\
+% \midrule
+% Gemini-2.5-Z & 7.30 & 15.76 & 22.82 & 28.85 & 15.27 & 64.13 \\
+% Gemini-2.5-M & 7.28 & \underline{16.64} & \underline{23.06} & 28.36 & 15.05 & \underline{59.43} \\
+% Gemini-2.5-H & 6.26 & 14.80 & 21.36 & 29.46 & 16.17 & 74.38 \\
+% \midrule
+% Claude-3.5-Z & 6.22 & 14.48 & 22.20 & \underline{26.88} & 14.18 & 67.71 \\
+% Claude-3.5-M & 6.02 & 14.24 & 21.82 & 26.92 & \underline{13.93} & 62.29 \\
+% Claude-3.5-H & 6.92 & 15.10 & 22.44 & 27.50 & 14.42 & 64.31 \\
+% \midrule
+% ML Best      & \textbf{8.46} & \textbf{22.62} & \textbf{33.42} & \textbf{9.17} & \textbf{6.55} & \textbf{35.04} \\
+% Stat Best    & 5.90 & 15.34 & 23.00 & 27.97 & 14.52 & 56.34 \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+
+% We assess model performance using three categories of metrics: (1) standard regression metrics including Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and Mean Absolute Percentage Error (MAPE). (2) business-oriented accuracy metrics, defined as Tolerance Accuracy (TA@k) which is the proportion of predictions where the absolute error is $k$ days or less (i.e., $|y - \hat{y}| \le k$). This metric directly measures the model's utility in a real-world setting where exact precision is not always required. We report TA@0 (exact-day accuracy), TA@1 (±1-day accuracy), and TA@2 (±2-day accuracy). (3) Deployment performance is measured by the cost and latency required to generate a prediction.
+%  % and the coefficient of determination ($R^2$)
+
+
+% \textbf{RQ1: LLMs vs. Traditional ML}
+% A primary finding from \ref{tab:llm_combined_metrics_onecol}, consistent across both the proprietary and Instacart datasets, is the ML model's dominant performance. It achieves over 50\% improvement on most key metrics compared to the best-performing LLM. For instance, on the proprietary dataset, the ML model's MAPE of 29.92\% is 92.0\% better than the best-performing LLM (Claude-3.5 Medium at 57.45\%). On the business-critical "TA@1" metric, the ML model scores 22.98\%, beating the best LLM's 14.63\% (Claude-3.5 High) by 57.1\%. This performance gap is likely due to a fundamental "impedance mismatch" for the LLM. The ML model directly operates on structured numerical features, whereas the LLM must first translate qualitative linguistic descriptions into an internal representation before performing regression, introducing significant error. Notably, the disparity in performance is significantly larger for error metrics than for accuracy metrics, as LLMs' performance on TA@k is competitive. This suggests that while LLMs fail at quantitative precision (i.e. pinpointing the exact day), they are better at approximate temporal classification. This aligns with the business goal for replenishment, where knowing a user will buy "in the next 48 hours" is often sufficient.
+
+% Another notable observation is that LLMs outperform the “stat best” median baseline across both datasets and metrics, indicating that they extract additional signal from contextual descriptions beyond simple historical central tendency. This suggests that LLMs incorporate contextual cues rather than merely reproducing medians, yielding more informative estimates, especially for approximation rather than exact-day prediction. These results indicate that LLMs have useful but limited temporal reasoning capabilities.
+
+
+% \textbf{RQ2: The Impact of Context on LLM Performance} Our second research question examines how different levels of context affect LLM performance. Across both datasets, medium-level context, including basic product attributes, simple statistics, and concise user history, consistently improves both model metrics and business-oriented accuracy. In contrast, high-level narrative context often degrades performance, sometimes matching the zero-context baseline. This suggests a context-as-noise effect: focused, decision-relevant information aids temporal reasoning, whereas semantically rich but temporally irrelevant details distract the model. As illustrated in Figure \ref{fig:casestudy}, green highlights show that medium-context prompts encourage the model to rely on stable quantitative cues, producing correct or near-correct predictions, while red highlights show that high-context prompts surface narrative details that models overweight, diverting attention from the underlying temporal structure and leading to erroneous predictions.
+
+% Across LLM families, Claude-3.5 performs most consistently and achieves the best results on the internal dataset. On the Instacart dataset, Claude-3.5 and Gemini-2.5 achieve top performance on different metrics. In terms of efficiency, GPT-4o is the fastest and cheapest (around 1.2--1.4s latency, >\$0.003 per call), while Claude-3.5 is moderately slower (around 2--4s) and 3$\times$ more expensive, and Gemini-2.5 has the highest latency (around 15--19s) with lower overall accuracy.
+
+
+% Our study presents a framework for time-interval prediction, establishes strong baselines, and positions LLMs between statistical and machine-learning models. We show that targeted and compact context can aid LLM reasoning, while excessive narrative detail can obscure the temporal signal. These findings highlight both the potential and limitations of LLMs for structured temporal inference and point toward hybrid models combining statistical precision with linguistic flexibility.
+
+
+
+
+% \clearpage
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{bibfile}
+
+\end{document}
+\endinput
+%%
+%% End of file `sample-sigconf.tex'.

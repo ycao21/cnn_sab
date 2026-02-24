@@ -330,7 +330,7 @@ Each $\mathbf{z}_i$ is passed through a two-layer MLP scorer to produce a scalar
 
 \subsection{Datasets}
 
-We evaluate our approach on two real-world e-commerce datasets: proprietary grocery data and the public Instacart dataset \cite{yasserh_instacart_2017}. In both datasets, user-category pairs with fewer than five purchases are excluded, and intervals longer than 20 days are removed. The proprietary dataset contains 5{,}780 users across 12 product types (1.03 types/user average) with over 110{,}000 purchase records. The Instacart dataset includes 2{,}661 users across 10 categories (1.87 categories/user average) with roughly 194{,}000 orders. Both datasets span diverse categories (Fresh Produce, Dairy, Packaged Goods, Snacks) capturing variability in purchase periodicity and seasonality for temporal reasoning comparison.
+We evaluate on four datasets spanning grocery and retail domains (Table~\ref{tab:dataset_stats}). \textbf{Instacart}~\cite{yasserh_instacart_2017} is a large public grocery dataset with 18K users and 37K items across diverse categories. \textbf{TaFeng}~\cite{yu2020predicting} is a public Taiwanese supermarket dataset with moderate size and shorter user histories. \textbf{DC} (Dunnhumby\footnote{\url{https://www.dunnhumby.com/source-files/}}) is a loyalty-card retail dataset with a large user base but a small item catalog of 852 products. \textbf{Proprietary} is an internal large-scale grocery dataset with 10K users and 88K items. For all datasets, we follow the standard leave-one-out protocol: the last basket per user is held out as the test target; all preceding baskets are used for training. Calendar timestamps are preserved as absolute dates for the 364-day binary history encoding.
 
 \begin{table}[h]
 \centering
@@ -349,32 +349,15 @@ Proprietary & 10,308 & 88,812 & 11.72 & 43.00 & 443,232 \\
 \label{tab:dataset_stats}
 \end{table}
 
-\subsection{Models}
-We evaluate ...
+\subsection{Baselines}
 
-% \textbf{LLM Models.}
-% We evaluate several state-of-the-art LLMs to examine their ability to predict temporal purchase intervals from structured behavioral data. Specifically, we consider GPT-4o, Gemini-2.5 Pro, and Claude 3.5 Sonnet, prompted under systematically varied context levels to study how contextual richness influences temporal reasoning. As illustrated in Figure 2, each model receives a textual description of a user’s past purchase events and is asked to predict the next inter-purchase interval in days. To control the amount of information provided, we design three prompting levels, allowing us to test how much information an LLM needs for accurate timing predictions. Zero-context isolates pure numeric reasoning from intervals alone. Medium-context adds product descriptions and basic statistics to see whether product metadata or simple statistics help. High-context includes richer behavioral signals to evaluate whether LLMs benefit from features commonly used in traditional forecasting. This progression provides a controlled way to assess the impact of different information levels. All model outputs are parsed into numeric predictions and evaluated under a unified scoring framework. We focused on zero-shot (instead of few-shot) evaluation as our is goal is to mainly assess LLM's inherent temporal reasoning capabilities without task-specific guidance, leaving advanced prompt tuning strategies to future work.
+We compare against: \textbf{PersonalTop}, a non-parametric baseline that ranks a user’s historical items by global purchase frequency --- surprisingly strong due to the frequency bias in repurchase; \textbf{DNNTSP}~\cite{yu2020predicting}, a graph neural network model that learns item co-occurrence patterns for set-based next-basket prediction using basket-index timestamps; and \textbf{PIETSP}~\cite{ranjan2025scalable}, a scalable permutation-equivariant temporal set prediction model that extends DNNTSP with improved sequence modeling, also basket-index based.
 
-% \begin{figure}[!htbp]
-%     \centering
-%     \includegraphics[width=1\linewidth]{figure2.png}
-%     \caption{Prompt designs for three context levels: Zero (historical intervals only), Medium (product metadata, summary statistics), and High (recency features, user lifecycle information).}
-%     \label{fig:prompts}
-% \end{figure}
+\subsection{Evaluation and Implementation}
 
-%Prompt designs for three context levels: Zero (intervals only), Medium (product metadata, summary statistics), and High (recency features, user lifecycle information).
-
-%Overview of the prompt designs used for evaluating LLM reasoning under three context levels: Zero Context (historical intervals only), Medium Context (product metadata and basic summary statistics), and High Context (recency features and user-level lifecycle information).
-
-
-% \textbf{ML Models.}
-% To establish structured-data baselines, we implement classical ML models that learn temporal dependencies from numerical features, such as historical inter-purchase intervals, user recency and category-level purchase frequency. We trained three representative machine learning models in industry that are commonly used (RandomForest regression, XGBoost regression, and Multi-layer deep neural network), optimized using median quantile loss to better accommodate the discrete distribution of the target variable and align with business metrics for next-purchase prediction in practice. Our experiments demonstrate that models trained with quantile loss achieves superior performance across both datasets. This structured setup reflects the dominant paradigm in tabular and demand-forecasting systems, providing a grounded benchmark for comparison against LLM-based interval reasoning.
-
-% \textbf{Statistical Models.}
-% We further include lightweight statistical estimators that capture baseline temporal regularities without learning. These include the mean, median, and exponential-moving-average (EMA) of previous intervals, each computed at user and product type level. Such models are widely used in retail analytics and serve as interpretable lower-bound baselines that reveal how much improvement more sophisticated learners or reasoning-based systems can realistically achieve.
+We report Precision@$K$, Recall@$K$, and NDCG@$K$ for $K \in \{1, 3, 5, 10\}$. CASE is implemented in PyTorch with item embedding dimension $d_e{=}256$, CNN output dimension $d_c{=}128$, and ISAB hidden dimension $d_h{=}256$. We train for 50 epochs with Adam (lr $= 10^{-3}$, weight decay $= 10^{-5}$) and dropout 0.1, using a 364-day purchase history window.
 
 \section{Experimental Results}
-The results of our experiments provide a clear empirical view ...
 
 \subsection{Main Results}
 
@@ -497,6 +480,9 @@ The results of our experiments provide a clear empirical view ...
 \label{tab:topk_grouped_results}
 \end{table*}
 
+Table~\ref{tab:topk_grouped_results} shows results across all datasets. CASE outperforms all baselines on every public dataset at every $K$. The gains are most pronounced at $K{=}1$: on Instacart CASE improves Precision@1 from 0.502 (PersonalTop) to 0.534 (+6.4\%), and on DC from 0.343 to 0.391 (+14.0\%). PersonalTop ranks second in most settings, reflecting the strong frequency signal in repurchase behavior; however, it cannot distinguish items that are due for repurchase from those that are not, whereas CASE's calendar-time encoding captures precisely this timing distinction. DNNTSP, despite using learned item co-occurrence, underperforms PersonalTop at low $K$ on Instacart and DC, where cadence timing is decisive. On the Proprietary dataset, CASE consistently outperforms PersonalTop across all $K$ values, and delivers a 14\% relative Precision and Recall lift over the deployed production system at $K{=}1$ (Table~\ref{tab:lift}).
+
+\subsection{Ablation Study}
 
 \begin{table*}[t]
 \centering
@@ -579,6 +565,12 @@ K & Precision & Recall & NDCG \\
 \end{tabular}
 \label{tab:lift}
 \end{table}
+
+Table~\ref{tab:lift} confirms sustained gains across all $K$ values, with the relative improvement tapering from 14\% at $K{=}1$ to 5\% at $K{=}20$ as the task becomes easier. The ablation study isolates contributions of each component. \textbf{Removing the temporal CNN} (``Set Attention w/o CNN'') causes the largest degradation: Precision@1 drops from 0.385 to 0.223 ($-$42\%), establishing calendar-time cadence encoding as the dominant signal. \textbf{Removing ISAB} (``CNN w/o any set encoder'') consistently reduces performance, particularly at larger $K$, confirming that cross-item dependencies contribute meaningful signal. \textbf{Adding dual scoring} (``+ Set pooling'') slightly hurts performance, indicating that the per-item intrinsic score from ISAB is self-sufficient and the global compatibility term introduces noise rather than signal. Both ISAB and PermEqMean perform comparably, though ISAB maintains a consistent advantage at $K{\geq}5$.
+
+\section{Conclusion}
+
+We presented CASE, a cadence-aware set encoding model for large-scale next basket repurchase recommendation. By representing each item's purchase history as a binary calendar-time indicator and applying shared multi-scale convolutional filters, CASE captures item-level repurchase rhythms without per-user parameters. Induced set attention then enriches item representations with cross-item co-purchase context at sub-quadratic cost. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 14\% relative Recall and Precision lift over a deployed production system serving millions of users. These results demonstrate that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for production-scale NBRR.
 
 % \begin{table}[!htbp]
 % \centering

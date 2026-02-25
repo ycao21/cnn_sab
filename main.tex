@@ -494,7 +494,7 @@ Table~\ref{tab:main_results} compares CASE against all baselines across four dat
 
 \textbf{Recommendation quality.} CASE achieves best or near-best performance across all datasets and cutoffs. The primary offline competitor is TIFUKNN, a well-established strong baseline for repurchase recommendation. On datasets with sparse user histories (TaFeng: 6.58 baskets/user; DC: 1.60 baskets/user), CASE leads clearly: with few transactions per user, KNN neighbor estimation is unreliable and aggregation degrades, whereas CASE's shared CNN is trained on the full population and generalizes even to sparse users. On richer datasets such as Instacart (avg.\ basket size 16.7 items), TIFUKNN leads only at $K{=}1$ while CASE outperforms at $K{\geq}5$, the practically more relevant regime given that customers routinely place large baskets. On the Proprietary dataset, CASE and TIFUKNN are closely matched, which is itself a strong result given TIFUKNN's known effectiveness as a repurchase baseline. DNNTSP, despite its more complex architecture, underperforms PersonalTop at low $K$ across all datasets, confirming that discarding calendar time in favor of basket-index encoding is a fundamental structural limitation.
 
-\textbf{Scalability.} CASE's competitive offline performance is achieved without any per-user parameters: item embeddings, CNN filters, ISAB, and the MLP scorer are all shared, and inference runs as a single batched forward pass in $O(N{\cdot}K)$ per user. TIFUKNN, by contrast, requires $O(|\mathcal{U}|{\cdot}N)$ per-query computation to retrieve and aggregate neighbor histories, which is infeasible at tens of millions of users without approximate retrieval infrastructure that adds latency and quality degradation. CASE is the only approach in our comparison that is simultaneously competitive with the strongest offline baseline and deployable at production scale without modification.
+\textbf{Scalability.} CASE's competitive offline performance is achieved without any per-user parameters: item embeddings, CNN filters, ISAB, and the MLP scorer are all shared, and inference runs as a single batched forward pass in $O(N{\cdot}K)$ per user. TIFUKNN, by contrast, requires $O(|\mathcal{U}|{\cdot}N)$ per-query computation to retrieve and aggregate neighbor histories --- infeasible at tens of millions of users without approximate retrieval infrastructure that adds latency and quality degradation. CASE is the only approach in our comparison that is simultaneously competitive with the strongest offline baseline and deployable at production scale without modification.
 
 \subsection{Ablation Study}
 
@@ -528,14 +528,6 @@ K & Precision & Recall & NDCG \\
 \end{tabular}
 \label{tab:lift}
 \end{table}
-
-
-
-\section{Conclusion}
-
-We presented CASE, a cadence-aware set encoding model for large-scale next basket repurchase recommendation. By representing each item's purchase history as a binary calendar-time indicator and applying shared multi-scale convolutional filters, CASE captures item-level repurchase rhythms without per-user parameters. Induced set attention then enriches item representations with cross-item co-purchase context at sub-quadratic cost. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 14\% relative Recall and Precision lift over a deployed production system serving millions of users. These results demonstrate that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for production-scale NBRR. Future work includes integrating CASE with complementary basket completion models~\cite{cao2025s2srec2} for a unified next-basket system.
-
-
 
 
 
@@ -595,6 +587,13 @@ Set Attention w/o CNN
 \bottomrule
 \end{tabular}
 \end{table*}
+
+
+
+\section{Conclusion}
+
+We presented CASE, a cadence-aware set encoding model for large-scale next basket repurchase recommendation. By representing each item's purchase history as a binary calendar-time indicator and applying shared multi-scale convolutional filters, CASE captures item-level repurchase rhythms without per-user parameters. Induced set attention then enriches item representations with cross-item co-purchase context at sub-quadratic cost. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 14\% relative Recall and Precision lift over a deployed production system serving millions of users. These results demonstrate that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for production-scale NBRR. 
+
 
 
 

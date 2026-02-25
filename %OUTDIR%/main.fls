@@ -1,0 +1,13 @@
+PWD /Users/ycao01721/Documents/github/cnn_sab
+INPUT /usr/local/texlive/2025basic/texmf.cnf
+INPUT /usr/local/texlive/2025basic/texmf-dist/web2c/texmf.cnf
+INPUT /usr/local/texlive/2025basic/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT /Users/ycao01721/Documents/github/cnn_sab/main.tex
+OUTPUT %OUTDIR%/main.log
+INPUT ./acmart.cls
+INPUT acmart.cls
+INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+INPUT /usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+INPUT /usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+INPUT /usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/keyval.tex

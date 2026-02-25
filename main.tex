@@ -364,7 +364,7 @@ Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score 
 & \multicolumn{3}{c}{$K{=}10$} \\
 & & Prec & Rec & NDCG
   & Prec & Rec & NDCG
-  & Prec & Rec & NDCG
+  & Prec & Rec & NDCG·
   & Prec & Rec & NDCG \\
 \midrule
 
@@ -440,8 +440,8 @@ Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score 
 & \underline{0.1139} & \textbf{0.8446} & \textbf{0.5479} \\
 \midrule
 
-% ========================= Walmart =========================
-\multirow{4}{*}{Walmart}
+% ========================= Proprietary =========================
+\multirow{4}{*}{Proprietary}
 & Personal\_Top
 & 0.3672 & 0.0921 & 0.3672
 & 0.2744 & 0.1694 & 0.3251
@@ -492,18 +492,20 @@ CASE is implemented in PyTorch with item embedding dimension $d_e{=}128$, CNN ou
 
 \section{Experimental Results}
 
-Table~\ref{tab:main_results} compares CASE against all baselines across four datasets.
+Table~\ref{tab:main_results} compares CASE against all baselines across four datasets. We assess the model along two axes: offline recommendation quality and scalability to production.
 
+<<<<<<< Updated upstream
 
 \textbf{TaFeng and DC.} CASE achieves the best or near-best results across almost every metric and $K$ on both datasets. Both have sparse per-user histories (6.58 and 1.60 baskets/user respectively), which undermines TIFUKNN's neighbor estimation: with few transactions, user similarity is unreliable and neighbor aggregation degrades. CASE is robust in this regime because the shared CNN is trained on the full user population and encodes population-level repurchase rhythms --- even a user with 6 baskets benefits from these shared temporal patterns.
+=======
+\textbf{Recommendation quality.} CASE achieves best or near-best performance across all datasets and cutoffs. The primary offline competitor is TIFUKNN, a well-established strong baseline for repurchase recommendation. On datasets with sparse user histories (TaFeng: 6.58 baskets/user; DC: 1.60 baskets/user), CASE leads clearly: with few transactions per user, KNN neighbor estimation is unreliable and aggregation degrades, whereas CASE's shared CNN is trained on the full population and generalizes even to sparse users. On richer datasets such as Instacart (avg.\ basket size 16.7 items), TIFUKNN leads only at $K{=}1$ while CASE outperforms at $K{\geq}5$ --- the practically more relevant regime given that customers routinely place large baskets. On the Proprietary dataset, CASE and TIFUKNN are closely matched, which is itself a strong result given TIFUKNN's known effectiveness as a repurchase baseline. DNNTSP, despite its more complex architecture, underperforms PersonalTop at low $K$ across all datasets, confirming that discarding calendar time in favor of basket-index encoding is a fundamental structural limitation.
+>>>>>>> Stashed changes
 
-\textbf{Instacart.} TIFUKNN leads at $K{=}1$ but CASE outperforms across $K{\geq}5$. Given that Instacart's average basket size is 16.7 items, customers routinely place large orders, making higher-$K$ recommendations the more operationally relevant regime. At $K{=}1$ neighbor consensus on the single most-purchased item is decisive; at larger $K$, models must rank many items with similar long-run frequencies, and CASE's cadence encoding --- distinguishing items that are ``overdue'' from those recently purchased --- provides the finer-grained signal that TIFUKNN's frequency aggregation cannot.
-
-\textbf{Walmart.} CASE and TIFUKNN are closely matched, with CASE slightly ahead at $K{\leq}5$ and TIFUKNN marginally leading at $K{=}10$. TIFUKNN is a well-established strong baseline for next basket repurchase recommendation, and CASE being competitive with it is itself a meaningful result --- with the critical distinction that CASE requires no per-user parameters and runs in a single shared forward pass, while TIFUKNN's $O(|\mathcal{U}|{\cdot}N)$ inference cost is infeasible at production scale. DNNTSP's basket-index representation underperforms PersonalTop at low $K$ across all datasets, confirming that discarding calendar time is a concrete structural limitation.
+\textbf{Scalability.} CASE's competitive offline performance is achieved without any per-user parameters: item embeddings, CNN filters, ISAB, and the MLP scorer are all shared, and inference runs as a single batched forward pass in $O(N{\cdot}K)$ per user. TIFUKNN, by contrast, requires $O(|\mathcal{U}|{\cdot}N)$ per-query computation to retrieve and aggregate neighbor histories --- infeasible at tens of millions of users without approximate retrieval infrastructure that adds latency and quality degradation. CASE is the only approach in our comparison that is simultaneously competitive with the strongest offline baseline and deployable at production scale without modification.
 
 \subsection{Ablation Study}
 
-The ablation study (evaluated on the Walmart dataset) isolates the contribution of each architectural component.
+The ablation study (evaluated on the Proprietary dataset) isolates the contribution of each architectural component.
 
 \textbf{Temporal CNN is the dominant component.} Removing the multi-scale CNN causes the largest performance drop across all metrics: Precision@1 collapses from 0.385 to 0.223, Recall@5 from 0.254 to 0.145, and NDCG@10 from 0.350 to 0.192. This confirms that the calendar-time cadence encoding is the primary source of discriminative signal, and no amount of set-level attention can compensate for its absence.
 

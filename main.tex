@@ -329,15 +329,6 @@ Items in $\mathcal{I}_u$ form an unordered set; co-purchase patterns provide add
 \textbf{Scoring and Training.}
 Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score $s_i$; items are ranked by $s_i$ at inference. Training uses binary cross-entropy: items in $B_{l+1} \cap \mathcal{I}_u$ are positive, all others negative. All parameters — embeddings, CNN, ISAB, and MLP — are shared across users, making CASE's memory footprint independent of user population size.
 
-\section{Experimental Setting}
-
-\subsection{Datasets}
-
-We evaluate on four datasets spanning grocery and retail domains, chosen to cover a range of catalog sizes, basket densities, and user scales.
-
-\textbf{Instacart}~\cite{yasserh_instacart_2017} is a large public online grocery dataset with 18,739 users, 37,522 products, and an average of 10 baskets per user at 16.7 items each. It covers diverse categories (fresh produce, dairy, household goods) and is the most widely used public benchmark for next basket research. \textbf{TaFeng}~\cite{yu2020predicting} is a Taiwanese cash-and-carry supermarket dataset with 7,227 users and 18,703 items; its shorter histories (6.58 baskets/user) and smaller baskets (7.52 items) make it a challenging setting for cadence models. \textbf{DC} is derived from the Dunnhumby ``Carbo-Loading'' database\footnote{\url{https://www.dunnhumby.com/source-files/}} and contains 123,935 users but only 852 distinct products, with very sparse histories (1.60 baskets/user); it tests models under a closed, small item catalog. \textbf{Proprietary} is randomly sampled from our internal large-scale grocery dataset, having 10,308 users across a large amount of 88,812 items, and rich histories (11.72 baskets, 43 items/basket on average). 
-
-For all datasets, we apply leave-one-out evaluation: each user's last repurchasee item basket is the test target; all preceding baskets form the training set. Item candidate is defined as the intersection of the test basket with the user's training history. Due to some dataset don't provide dates, calendar timestamps are preserved as relevant days between orders, to construct the n-day binary history window at test time.
 
 % \begin{table}[h]
 % \centering
@@ -356,21 +347,10 @@ For all datasets, we apply leave-one-out evaluation: each user's last repurchase
 % \label{tab:dataset_stats}
 % \end{table}
 
-\subsection{Baselines}
-
-We compare CASE against four baseline models. \textbf{PersonalTop} is a non-parametric baseline that ranks each user’s historical items by their personal purchase frequency. Despite its simplicity, it is a strong baseline in the repurchase setting since items purchased frequently in the past are likely to be purchased again. \textbf{TIFUKNN}~\cite{hu2020modeling} is a KNN-based method that models personalized item frequency with temporal decay: it assigns exponentially decayed weights to past purchase events and aggregates scores from a user’s own history and their nearest neighbors in user space. TIFUKNN is competitive on offline benchmarks but fundamentally non-scalable in production: for each query user, it must compute similarities against all other users and retrieve their histories, resulting in $O(|\mathcal{U}| \cdot N)$ inference cost. At tens of millions of users this is infeasible without approximate nearest neighbor approximations that degrade recommendation quality, and the method has no straightforward batching or online serving path. \textbf{DNNTSP}~\cite{yu2020predicting} is a deep set-based model for next basket prediction that constructs a weighted item co-occurrence graph over the user’s basket sequence and uses GNN aggregation to capture inter-item relationships, followed by a temporal attention mechanism over basket embeddings. \textbf{PIETSP}~\cite{ranjan2025scalable} is a more recent scalable model that extends temporal set prediction with permutation-equivariant architectures, improving efficiency and sequence modeling quality over DNNTSP. Both DNNTSP and PIETSP treat time as basket index rather than calendar days.
-
-\subsection{Evaluation and Implementation}
-
-We report Precision@$K$, Recall@$K$, and NDCG@$K$ for $K \in \{1, 3, 5, 10\}$. Precision@$K$ measures the fraction of recommended items that are relevant, which is the primary metrics in real-world recommendation production system; Recall@$K$ measures the fraction of all relevant items captured in the top-$K$ list; NDCG@$K$ is a ranking-aware metric that assigns higher scores to relevant items appearing earlier in the list. In the NBRR production setting, a relevant item at rank 1 is more valuable than one at rank 10 since it appears at the top of the recommendation list shown to the user.
-
-CASE is implemented in PyTorch with item embedding dimension $d_e{=}128$, CNN output dimension $d_c{=}128$, ISAB hidden dimension $d_h{=}256$, $K{=}32$ induced points, and $H{=}4$ attention heads. We train for 30 epochs using the Adam optimizer with learning rate $10^{-3}$, weight decay $10^{-5}$, and batch size 64. Dropout of 0.1 is applied after each ISAB layer and in the MLP scorer. All models are trained on a single GPU.
-
-\section{Experimental Results}
-
 % Style like your screenshot: dataset blocks + grouped K headers.
 % Requires: \usepackage{booktabs,multirow}
 % Optional: \usepackage{array} for better column spacing
+
 \begin{table*}[t]
 \centering
 \small
@@ -487,123 +467,33 @@ CASE is implemented in PyTorch with item embedding dimension $d_e{=}128$, CNN ou
 \label{tab:main_results}
 \end{table*}
 
-% \begin{table*}[t]
-% \centering
-% \small
-% \caption{Comparisons with different methods on Top-$K$ performance (repurchase next-basket recommendation). Higher is better. Best results within each dataset and metric@K are in \textbf{bold}; second best are \underline{underlined}.}
-% \begin{tabular}{@{}ll|ccc|ccc|ccc|ccc@{}}
-% \toprule
-% \multirow{2}{*}{Datasets} & \multirow{2}{*}{Methods}
-% & \multicolumn{3}{c|}{$K{=}1$}
-% & \multicolumn{3}{c|}{$K{=}3$}
-% & \multicolumn{3}{c|}{$K{=}5$}
-% & \multicolumn{3}{c}{$K{=}10$} \\
-% & & Prec & Rec & NDCG
-%   & Prec & Rec & NDCG
-%   & Prec & Rec & NDCG
-%   & Prec & Rec & NDCG \\
-% \midrule
+\section{Experimental Setting}
 
-% % ========================= Instacart =========================
-% \multirow{4}{*}{Instacart}
-% & PersonalTop
-% & \underline{0.5019} & \underline{0.1173} & \underline{0.5019}
-% & \underline{0.4139} & \underline{0.2593} & \underline{0.4670}
-% & \underline{0.3574} & 0.3458 & \underline{0.4556}
-% & 0.2819 & 0.4821 & \textbf{0.4671} \\
-% & DNNTSP
-% & 0.4631 & 0.1025 & 0.4631
-% & 0.4002 & 0.2511 & 0.4447
-% & 0.3527 & \underline{0.3480} & 0.4427
-% & \underline{0.2842} & \underline{0.4943} & 0.4616 \\
-% & PIETSP
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & -- \\
-% & CASE (Ours)
-% & \textbf{0.5339} & \textbf{0.1282} & \textbf{0.5339}
-% & \textbf{0.4508} & \textbf{0.2896} & \textbf{0.5072}
-% & \textbf{0.3971} & \textbf{0.3937} & \textbf{0.5040}
-% & \textbf{0.3118} & \textbf{0.5397} & \underline{0.5170} \\
-% \midrule
+\subsection{Datasets}
 
-% % ========================= Ta-Feng =========================
-% \multirow{4}{*}{TaFeng}
-% & PersonalTop
-% & 0.1771 & 0.0988 & 0.1771
-% & 0.1363 & 0.2100 & 0.2042
-% & 0.1104 & 0.2776 & 0.2263
-% & 0.0795 & 0.3839 & 0.2612 \\
-% & DNNTSP
-% & \underline{0.2387} & \underline{0.1632} & \underline{0.2387}
-% & 0.1675 & 0.3196 & 0.2869
-% & 0.1406 & 0.4255 & 0.3275
-% & 0.1086 & 0.5809 & 0.3739 \\
-% & PIETSP
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & -- \\
-% & CASE (Ours)
-% & \textbf{0.2606} & \textbf{0.1708} & \textbf{0.2606}
-% & \textbf{0.1832} & \textbf{0.3306} & \textbf{0.3071}
-% & \textbf{0.1519} & \textbf{0.4318} & \textbf{0.3441}
-% & \textbf{0.1131} & \textbf{0.5932} & \textbf{0.3902} \\
-% \midrule
+We evaluate on four datasets spanning grocery and retail domains, chosen to cover a range of catalog sizes, basket densities, and user scales.
 
-% % ========================= DC =========================
-% \multirow{4}{*}{DC}
-% & PersonalTop
-% & \underline{0.3434} & \underline{0.2879} & \underline{0.3434}
-% & 0.2233 & 0.5424 & 0.4489
-% & 0.1672 & 0.6559 & 0.4828
-% & 0.1059 & 0.7838 & \underline{0.5000} \\
-% & DNNTSP
-% & 0.3264 & 0.2685 & 0.3264
-% & 0.2269 & 0.5485 & 0.4441
-% & 0.1710 & 0.6696 & 0.4790
-% & 0.1085 & 0.8057 & 0.4931 \\
-% & PIETSP
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & -- \\
-% & CASE (Ours)
-% & \textbf{0.3906} & \textbf{0.3300} & \textbf{0.3906}
-% & \textbf{0.2512} & \textbf{0.6120} & \textbf{0.5094}
-% & \textbf{0.1845} & \textbf{0.7236} & \textbf{0.5407}
-% & \textbf{0.1139} & \textbf{0.8446} & \textbf{0.5479} \\
-% \midrule
+\textbf{Instacart}~\cite{yasserh_instacart_2017} is a large public online grocery dataset with 18,739 users, 37,522 products, and an average of 10 baskets per user at 16.7 items each. It covers diverse categories (fresh produce, dairy, household goods) and is the most widely used public benchmark for next basket research. \textbf{TaFeng}~\cite{yu2020predicting} is a Taiwanese cash-and-carry supermarket dataset with 7,227 users and 18,703 items; its shorter histories (6.58 baskets/user) and smaller baskets (7.52 items) make it a challenging setting for cadence models. \textbf{DC} is derived from the Dunnhumby ``Carbo-Loading'' database\footnote{\url{https://www.dunnhumby.com/source-files/}} and contains 123,935 users but only 852 distinct products, with very sparse histories (1.60 baskets/user); it tests models under a closed, small item catalog. \textbf{Proprietary} is randomly sampled from our internal large-scale grocery dataset, having 10,308 users across a large amount of 88,812 items, and rich histories (11.72 baskets, 43 items/basket on average). 
 
-% % ========================= Proprietary =========================
-% \multirow{4}{*}{Proprietary}
-% & PersonalTop
-% & \underline{0.3686} & \underline{0.0940} & \underline{0.3686}
-% & 0.2744 & 0.1691 & 0.3248
-% & 0.2314 & 0.2206 & 0.3151
-% & 0.1772 & 0.2981 & 0.3126 \\
-% & DNNTSP
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & -- \\
-% & PIETSP
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & --
-% & -- & -- & -- \\
-% & CASE (Ours)
-% & \textbf{0.3849} & \textbf{0.1004} & \textbf{0.3849}
-% & \textbf{0.3047} & \textbf{0.1922} & \textbf{0.3572} % TODO: K=3 not in ablation, needs re-run
-% & \textbf{0.2593} & \textbf{0.2535} & \textbf{0.3495}
-% & \textbf{0.2009} & \textbf{0.3438} & \textbf{0.3500} \\
-% \bottomrule
-% \end{tabular}
-% \label{tab:topk_grouped_results}
-% \end{table*}
+For all datasets, we apply leave-one-out evaluation: each user's last repurchasee item basket is the test target; all preceding baskets form the training set. Item candidate is defined as the intersection of the test basket with the user's training history. Due to some dataset don't provide dates, calendar timestamps are preserved as relevant days between orders, to construct the n-day binary history window at test time.
+
+\subsection{Baselines}
+
+We compare CASE against four baseline models. \textbf{PersonalTop} is a non-parametric baseline that ranks each user’s historical items by their personal purchase frequency. Despite its simplicity, it is a strong baseline in the repurchase setting since items purchased frequently in the past are likely to be purchased again. \textbf{TIFUKNN}~\cite{hu2020modeling} is a KNN-based method that models personalized item frequency with temporal decay: it assigns exponentially decayed weights to past purchase events and aggregates scores from a user’s own history and their nearest neighbors in user space. TIFUKNN is competitive on offline benchmarks but fundamentally non-scalable in production: for each query user, it must compute similarities against all other users and retrieve their histories, resulting in $O(|\mathcal{U}| \cdot N)$ inference cost. At tens of millions of users this is infeasible without approximate nearest neighbor approximations that degrade recommendation quality, and the method has no straightforward batching or online serving path. \textbf{DNNTSP}~\cite{yu2020predicting} is a deep set-based model for next basket prediction that constructs a weighted item co-occurrence graph over the user’s basket sequence and uses GNN aggregation to capture inter-item relationships, followed by a temporal attention mechanism over basket embeddings. \textbf{PIETSP}~\cite{ranjan2025scalable} is a more recent scalable model that extends temporal set prediction with permutation-equivariant architectures, improving efficiency and sequence modeling quality over DNNTSP. Both DNNTSP and PIETSP treat time as basket index rather than calendar days.
+
+
+
+\subsection{Evaluation and Implementation}
+
+We report Precision@$K$, Recall@$K$, and NDCG@$K$ for $K \in \{1, 3, 5, 10\}$. Precision@$K$ measures the fraction of recommended items that are relevant, which is the primary metrics in real-world recommendation production system; Recall@$K$ measures the fraction of all relevant items captured in the top-$K$ list; NDCG@$K$ is a ranking-aware metric that assigns higher scores to relevant items appearing earlier in the list. In the NBRR production setting, a relevant item at rank 1 is more valuable than one at rank 10 since it appears at the top of the recommendation list shown to the user.
+
+CASE is implemented in PyTorch with item embedding dimension $d_e{=}128$, CNN output dimension $d_c{=}128$, ISAB hidden dimension $d_h{=}256$, $K{=}32$ induced points, and $H{=}4$ attention heads. We train for 30 epochs using the Adam optimizer with learning rate $10^{-3}$, weight decay $10^{-5}$, and batch size 64. Dropout of 0.1 is applied after each ISAB layer and in the MLP scorer. All models are trained on a single GPU.
+
+
+\section{Experimental Results}
 
 Table~\ref{tab:main_results} compares CASE against all baselines across four datasets.
+
 
 \textbf{TaFeng and DC.} CASE achieves the best or near-best results across almost every metric and $K$ on both datasets. Both have sparse per-user histories (6.58 and 1.60 baskets/user respectively), which undermines TIFUKNN's neighbor estimation: with few transactions, user similarity is unreliable and neighbor aggregation degrades. CASE is robust in this regime because the shared CNN is trained on the full user population and encodes population-level repurchase rhythms --- even a user with 6 baskets benefits from these shared temporal patterns.
 

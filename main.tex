@@ -354,7 +354,7 @@ Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score 
 \begin{table*}[t]
 \centering
 \small
-\caption{Comparisons on Top-$K$ performance for next-basket repurchase recommendation. Higher is better. Best results per dataset and metric@K are in \textbf{bold}; second best are \underline{underlined}.}
+\caption{Comparisons on Top-$K$ performance for next-basket repurchase recommendation. Higher is better. Best results per dataset and metric@K are in \textbf{bold}; second best are \underline{underlined}.} \YC{will update CASE to our best model numbers}
 \begin{tabular}{@{}ll|ccc|ccc|ccc|ccc@{}}
 \toprule
 \multirow{2}{*}{Datasets} & \multirow{2}{*}{Methods}
@@ -368,32 +368,8 @@ Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score 
   & Prec & Rec & NDCG \\
 \midrule
 
-% ========================= Instacart =========================
-\multirow{4}{*}{Instacart}
-& Personal\_Top
-& 0.5019 & 0.1173 & 0.5019
-& 0.4139 & 0.2593 & 0.4670
-& 0.3574 & 0.3458 & 0.4556
-& 0.2819 & 0.4821 & 0.4671 \\
-& TIFUKNN
-& \textbf{0.5489} & \textbf{0.1340} & \textbf{0.5489}
-& \textbf{0.4541} & \underline{0.2880} & \textbf{0.5131}
-& \underline{0.3930} & \underline{0.3878} & \underline{0.5037}
-& \underline{0.3115} & \underline{0.5371} & \textbf{0.5189} \\
-& DNNTSP
-& 0.4631 & 0.1025 & 0.4631
-& 0.4002 & 0.2511 & 0.4447
-& 0.3527 & 0.3480 & 0.4427
-& 0.2842 & 0.4943 & 0.4616 \\
-& CASE
-& \underline{0.5339} & \underline{0.1282} & \underline{0.5339}
-& \underline{0.4508} & \textbf{0.2896} & \underline{0.5072}
-& \textbf{0.3971} & \textbf{0.3937} & \textbf{0.5040}
-& \textbf{0.3118} & \textbf{0.5397} & \underline{0.5170} \\
-\midrule
-
 % ========================= Ta-Feng =========================
-\multirow{4}{*}{Ta-Feng}
+\multirow{4}{*}{TaFeng}
 & Personal\_Top
 & 0.1771 & 0.0988 & 0.1771
 & 0.1363 & 0.2100 & 0.2042
@@ -439,6 +415,31 @@ Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score 
 & \textbf{0.1845} & \textbf{0.7236} & \textbf{0.5407}
 & \underline{0.1139} & \textbf{0.8446} & \textbf{0.5479} \\
 \midrule
+
+% ========================= Instacart =========================
+\multirow{4}{*}{Instacart}
+& Personal\_Top
+& 0.5019 & 0.1173 & 0.5019
+& 0.4139 & 0.2593 & 0.4670
+& 0.3574 & 0.3458 & 0.4556
+& 0.2819 & 0.4821 & 0.4671 \\
+& TIFUKNN
+& \textbf{0.5489} & \textbf{0.1340} & \textbf{0.5489}
+& \textbf{0.4541} & \underline{0.2880} & \textbf{0.5131}
+& \underline{0.3930} & \underline{0.3878} & \underline{0.5037}
+& \underline{0.3115} & \underline{0.5371} & \textbf{0.5189} \\
+& DNNTSP
+& 0.4631 & 0.1025 & 0.4631
+& 0.4002 & 0.2511 & 0.4447
+& 0.3527 & 0.3480 & 0.4427
+& 0.2842 & 0.4943 & 0.4616 \\
+& CASE
+& \underline{0.5339} & \underline{0.1282} & \underline{0.5339}
+& \underline{0.4508} & \textbf{0.2896} & \underline{0.5072}
+& \textbf{0.3971} & \textbf{0.3937} & \textbf{0.5040}
+& \textbf{0.3118} & \textbf{0.5397} & \underline{0.5170} \\
+\midrule
+
 
 % ========================= Proprietary =========================
 \multirow{4}{*}{Proprietary}
@@ -490,15 +491,62 @@ CASE is implemented in PyTorch with item embedding dimension $d_e{=}128$, CNN ou
 
 \section{Experimental Results}
 
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Ablation study on the Proprietary dataset. Higher is better. Best results per metric@K are in \textbf{bold}; second best are \underline{underlined}.}
+\begin{tabular}{l|ccc|ccc|ccc|ccc}
+\toprule
+\multirow{2}{*}{Model Components}
+& \multicolumn{3}{c|}{$K{=}1$}
+& \multicolumn{3}{c|}{$K{=}5$}
+& \multicolumn{3}{c|}{$K{=}10$}
+& \multicolumn{3}{c}{$K{=}20$} \\
+& Prec & Rec & NDCG
+  & Prec & Rec & NDCG
+  & Prec & Rec & NDCG
+  & Prec & Rec & NDCG \\
+\midrule
+
+CASE
+& \underline{0.3871} & \underline{0.1007} & \underline{0.3871}
+& \textbf{0.2601} & \textbf{0.2540} & \textbf{0.3509}
+& \textbf{0.2017} & \textbf{0.3448} & \textbf{0.3514}
+& \textbf{0.1492} & \textbf{0.4655} & \textbf{0.3726} \\
+
+CNN w/ Set Perm Mean
+& \textbf{0.3897} & \textbf{0.1038} & \textbf{0.3897}
+& \underline{0.2597} & \underline{0.2505} & \underline{0.3489}
+& \underline{0.1974} & 0.3353 & \underline{0.3459}
+& 0.1433 & \underline{0.4426} & \underline{0.3626} \\
+
+CNN w/o any set encoder
+& 0.3767 & 0.0984 & 0.3767
+& 0.2525 & 0.2455 & 0.3399
+& 0.1974 & \underline{0.3406} & 0.3434
+& \underline{0.1435} & 0.4440 & 0.3598 \\
+
+Set Attention w/o CNN
+& 0.2226 & 0.0628 & 0.2226
+& 0.1292 & 0.1454 & 0.1872
+& 0.1020 & 0.2092 & 0.1921
+& 0.0754 & 0.2912 & 0.2064 \\
+
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
 Table~\ref{tab:main_results} compares CASE against all baselines across four datasets. We assess the model along two axes: offline recommendation quality and scalability to production.
 
-\textbf{Recommendation quality.} CASE achieves best or near-best performance across all datasets and cutoffs. The primary offline competitor is TIFUKNN, a well-established strong baseline for repurchase recommendation. On datasets with sparse user histories (TaFeng: 6.58 baskets/user; DC: 1.60 baskets/user), CASE leads clearly: with few transactions per user, KNN neighbor estimation is unreliable and aggregation degrades, whereas CASE's shared CNN is trained on the full population and generalizes even to sparse users. On richer datasets such as Instacart (avg.\ basket size 16.7 items), TIFUKNN leads only at $K{=}1$ while CASE outperforms at $K{\geq}5$, the practically more relevant regime given that customers routinely place large baskets. On the Proprietary dataset, CASE and TIFUKNN are closely matched, which is itself a strong result given TIFUKNN's known effectiveness as a repurchase baseline. DNNTSP, despite its more complex architecture, underperforms PersonalTop at low $K$ across all datasets, confirming that discarding calendar time in favor of basket-index encoding is a fundamental structural limitation.
+\textbf{Recommendation quality.} CASE achieves best or near-best performance across all datasets and cutoffs. The primary offline competitor is TIFUKNN, a well-established strong baseline for repurchase recommendation. On datasets with sparse user histories (TaFeng: 6.58 baskets/user; DC: 1.60 baskets/user), CASE leads clearly: with few transactions per user, KNN neighbor estimation is unreliable and aggregation degrades, whereas CASE's shared CNN is trained on the full population and generalizes even to sparse users. On richer datasets such as Instacart (avg.\ basket size 16.7 items), TIFUKNN leads at $K{=}1$ while CASE outperforms at $K{\geq}5$, the practically more relevant regime given that customers routinely place large baskets. On the Proprietary dataset, CASE and TIFUKNN are closely matched, which is itself a strong result given TIFUKNN's known effectiveness as a repurchase baseline. DNNTSP, despite its more complex architecture, underperforms PersonalTop at low $K$ across all datasets except for Tafeng, confirming that discarding calendar time in favor of basket-index encoding is a fundamental structural limitation.
 
-\textbf{Scalability.} CASE's competitive offline performance is achieved without any per-user parameters: item embeddings, CNN filters, ISAB, and the MLP scorer are all shared, and inference runs as a single batched forward pass in $O(N{\cdot}K)$ per user. TIFUKNN, by contrast, requires $O(|\mathcal{U}|{\cdot}N)$ per-query computation to retrieve and aggregate neighbor histories --- infeasible at tens of millions of users without approximate retrieval infrastructure that adds latency and quality degradation. CASE is the only approach in our comparison that is simultaneously competitive with the strongest offline baseline and deployable at production scale without modification.
+\textbf{Scalability.} CASE's competitive offline performance is achieved without any per-user parameters: item embeddings, CNN filters, ISAB, and the MLP scorer are all shared, and inference runs as a single batched forward pass in $O(N{\cdot}K)$ per user. TIFUKNN, by contrast, requires $O(|\mathcal{U}|{\cdot}N)$ per-query computation to retrieve and aggregate neighbor histories. THis is infeasible at tens of millions of users without approximate retrieval infrastructure that adds latency and quality degradation. CASE is the only approach in our comparison that is simultaneously competitive with the strongest offline baseline and deployable at production scale without modification.
 
 \subsection{Ablation Study}
 
-The ablation study (evaluated on the Proprietary dataset) isolates the contribution of each architectural component.
+The ablation study is evaluated on the Proprietary dataset and isolates the contribution of each architectural component.
 
 \textbf{Temporal CNN is the dominant component.} Removing the multi-scale CNN causes the largest performance drop across all metrics: Precision@1 collapses from 0.385 to 0.223, Recall@5 from 0.254 to 0.145, and NDCG@10 from 0.350 to 0.192. This confirms that the calendar-time cadence encoding is the primary source of discriminative signal, and no amount of set-level attention can compensate for its absence.
 
@@ -530,63 +578,6 @@ K & Precision & Recall & NDCG \\
 \end{table}
 
 
-
-\begin{table*}[t]
-\centering
-\small
-\caption{Ablation study on the Proprietary dataset. Higher is better. Best results per metric@K are in \textbf{bold}; second best are \underline{underlined}.}
-\begin{tabular}{l|ccc|ccc|ccc|ccc}
-\toprule
-\multirow{2}{*}{Model Components}
-& \multicolumn{3}{c|}{$K{=}1$}
-& \multicolumn{3}{c|}{$K{=}5$}
-& \multicolumn{3}{c|}{$K{=}10$}
-& \multicolumn{3}{c}{$K{=}20$} \\
-& Prec & Rec & NDCG
-  & Prec & Rec & NDCG
-  & Prec & Rec & NDCG
-  & Prec & Rec & NDCG \\
-\midrule
-
-CNN w/ Set Attention
-& \underline{0.3871} & \underline{0.1007} & \underline{0.3871}
-& \textbf{0.2601} & \textbf{0.2540} & \textbf{0.3509}
-& \textbf{0.2017} & \textbf{0.3448} & \textbf{0.3514}
-& \textbf{0.1492} & \textbf{0.4655} & \textbf{0.3726} \\
-
-CNN w/ Set Perm Mean
-& \textbf{0.3897} & \textbf{0.1038} & \textbf{0.3897}
-& \underline{0.2597} & \underline{0.2505} & \underline{0.3489}
-& \underline{0.1974} & 0.3353 & \underline{0.3459}
-& 0.1433 & \underline{0.4426} & \underline{0.3626} \\
-
-% CNN w/ Set attention Encoder plus pooling
-% & 0.3724 & 0.0991 & 0.3724
-% & 0.2563 & 0.2492 & 0.3450
-% & \underline{0.1980} & \underline{0.3423} & \underline{0.3460}
-% & \underline{0.1445} & \underline{0.4539} & \underline{0.3648} \\
-
-CNN w/o any set encoder
-& 0.3767 & 0.0984 & 0.3767
-& 0.2525 & 0.2455 & 0.3399
-& 0.1974 & \underline{0.3406} & 0.3434
-& \underline{0.1435} & 0.4440 & 0.3598 \\
-
-% No\_SetTran\_PMA
-% & 0.3772 & 0.0993 & 0.3772
-% & 0.2571 & 0.2493 & 0.3450
-% & 0.1977 & 0.3408 & 0.3449
-% & 0.1463 & \underline{0.4567} & \underline{0.3661} \\
-
-Set Attention w/o CNN
-& 0.2226 & 0.0628 & 0.2226
-& 0.1292 & 0.1454 & 0.1872
-& 0.1020 & 0.2092 & 0.1921
-& 0.0754 & 0.2912 & 0.2064 \\
-
-\bottomrule
-\end{tabular}
-\end{table*}
 
 
 

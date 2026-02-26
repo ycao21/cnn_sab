@@ -229,9 +229,7 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-Repurchase behavior is a major driver of large-scale retail recommendation: many items in a user’s next basket were purchased before, and their timing often follows stable, item-specific cadences. Yet most next basket recommendation models represent history as a sequence of discrete basket events indexed by visit order, which cannot explicitly model elapsed calendar time or update repurchase likelihoods between transactions. 
-We present \textbf{CASE} (\textbf{C}adence-\textbf{A}ware \textbf{S}et \textbf{E}ncoding for next-basket repurchase recommendation), which decouples item-level cadence encoding from cross-item set modeling. CASE represents each item’s purchase history as a calendar-time signal over a fixed horizon, applies shared multi-scale temporal convolutions to capture recurring rhythms, and uses induced set attention to model cross-item dependencies with sub-quadratic complexity. 
-Across three public benchmarks and a proprietary dataset, CASE consistently improves Precision, Recall, and NDCG at multiple cutoffs compared to strong nextbasket prediction baselines. In a production-scale evaluation with over tens of million users and large catalog items, CASE achieves up to 8.6\% relative Precision and 9.9\% Recall lift at $K{=}5$, demonstrating that scalable cadence-aware modeling yields measurable gains in both benchmark and industrial settings.
+Repurchase behavior is a major driver of large-scale retail recommendation: many items in a user’s next basket were purchased before, and their timing often follows stable, item-specific cadences. Yet most next basket recommendation models represent history as a sequence of discrete basket events indexed by visit order, which cannot explicitly model elapsed calendar time or update repurchase likelihoods between transactions. We present \textbf{CASE} (\textbf{C}adence-\textbf{A}ware \textbf{S}et \textbf{E}ncoding for next-basket repurchase recommendation), which decouples item-level cadence encoding from cross-item set modeling. CASE represents each item’s purchase history as a calendar-time signal over a fixed horizon, applies shared multi-scale temporal convolutions to capture recurring rhythms, and uses induced set attention to model cross-item dependencies with sub-quadratic complexity. Across three public benchmarks and a proprietary dataset, CASE consistently improves Precision, Recall, and NDCG at multiple cutoffs compared to strong nextbasket prediction baselines. In a production-scale evaluation with over tens of million users and large catalog items, CASE achieves up to 8.6\% relative Precision and 9.9\% Recall lift at $K{=}5$, demonstrating that scalable cadence-aware modeling yields measurable gains in both benchmark and industrial settings.
 \end{abstract}
 
 
@@ -294,7 +292,7 @@ Across three public benchmarks and a proprietary dataset, CASE consistently impr
     \centering    
     \includegraphics[width=1\linewidth]{figure1.jpg}
     \caption{
-    Overview of CASE architecture. For each user, historical baskets are converted into item-level binary calendar-time indicators over a fixed $T$-day horizon. Shared multi-scale temporal convolutional kernels (weekly, biweekly, monthly, quarterly, and seasonal) extract cadence-aware features for each item, capturing periodic and long-term repurchase patterns. The resulting cadence embedding $\mathbf{c}_i$ is concatenated with the item identity embedding $\mathbf{e}_i$ to form $\mathbf{x}_i$ for all items and processed by an Induced Set Attention Block (ISAB), which models cross-item dependencies with sub-quadratic complexity via learned induced points. A final MLP scoring layer outputs per-item repurchase scores for ranking.
+    CASE architecture. Item purchase histories are encoded as binary $T$-day calendar-time signals. Shared multi-scale Conv1d kernels (weekly through seasonal) extract cadence embeddings $\mathbf{c}_i$, concatenated with item embeddings $\mathbf{e}_i$ and processed by an Induced Set Attention Block (ISAB) to capture cross-item dependencies at sub-quadratic cost. A final MLP outputs per-item repurchase scores.
     }    
     \label{fig:diagram}
 \end{figure*}
@@ -613,10 +611,7 @@ The ablation study is evaluated on the Instacart dataset and isolates the contri
     \centering    
     \includegraphics[width=0.8\linewidth]{figure2.jpg}
     \caption{
-    PCA projections of item embeddings at different stages of CASE (50 samples for positive and negative items each). 
-    Left: cadence embeddings after temporal CNN. 
-    Right: representations after set attention (ISAB). 
-    Temporal CNN captures primary cadence-based separation, while set attention refines the embedding space using cross-item context.
+    PCA of item embeddings (50 positive/negative samples each). Left: after temporal CNN; Right: after ISAB. CNN drives cadence-based separation and ISAB further refines it with cross-item context.
     }
     \label{fig:embedding}
 \end{figure}
@@ -650,8 +645,7 @@ K & Precision & Recall & NDCG \\
 
 \section{Conclusion}
 
-We presented CASE, a cadence-aware set encoding model for large-scale next basket repurchase recommendation. By representing each item's purchase history as a binary calendar-time indicator and applying shared multi-scale convolutional filters, CASE captures item-level repurchase rhythms without per-user parameters. Induced set attention then enriches item representations with cross-item co-purchase context at sub-quadratic cost. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 8.6\% relative Precision and 9.9\% Recall lift over a deployed production system serving tens of millions of users. These results demonstrate that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for production-scale NBRR. 
-
+We presented CASE, which encodes item-level repurchase cadence via shared multi-scale convolutional filters and models cross-item dependencies through induced set attention, requiring no per-user parameters. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 8.6\% Precision and 9.9\% Recall lift over a deployed production system serving tens of millions of users. These results confirm that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for large-scale NBRR.
 
 
 

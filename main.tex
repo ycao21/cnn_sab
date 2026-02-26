@@ -324,19 +324,20 @@ which reduce O($N^2$) pairwise attention to O($N{\cdot}K$) via a small set of le
 \label{sec:model}
 
 % \textbf{Problem Formulation.}
-Let $\mathcal{B}_u = (B_1, B_2, \ldots, B_L)$ denote the ordered basket sequence for user $u$, where $B_l \subseteq \mathcal{I}$ is purchased on calendar date $d_l$. The NBRR task ranks items in the repurchase history $\mathcal{I}_u = \bigcup_l B_l$ by their likelihood of appearing in $B_{L+1}$; Figure~\ref{fig:diagram} provides an overview of the CASE architecture.
+Let $\mathcal{B}_u = (B_1, B_2, \ldots, B_L)$ denote the ordered basket sequence for user $u$, where $B_l \subseteq \mathcal{I}$ is purchased on calendar date $d_l$. The NBRR task ranks items in the repurchase history $\mathcal{I}_u = \bigcup_l B_l$ by their likelihood of appearing in $B_{L+1}$. Figure~\ref{fig:diagram} provides an overview of the CASE architecture.
 
 \textbf{Calendar-Time History Representation.}
 For each item $i \in \mathcal{I}_u$, we construct a binary purchase indicator $\mathbf{h}_i \in \{0,1\}^T$ over a rolling $T$-day calendar window, where $h_{i,t}{=}1$ if item $i$ was purchased on day $t$. Unlike basket-index encoding, this preserves actual inter-purchase intervals, enabling the model to distinguish items with different repurchase cadences and capture seasonal effects.
 
 \textbf{Multi-Scale Temporal CNN.}
-Shared multi-scale Conv1d filters are applied over $\mathbf{h}_i$ at five kernel sizes: weekly ($k{=}7$), biweekly ($k{=}14$), monthly ($k{=}28$), seasonal ($k{=}91$), and trend ($k{=}182$), each with stride $k$ (non-overlapping windows). The $\lfloor T/k \rfloor$ activations per scale are concatenated across all scales and projected through two FC layers with ReLU to yield $\mathbf{c}_i \in \mathbb{R}^{d_c}$. This multi-resolution design captures temporal patterns at multiple horizons, enabling CASE to model periodicity and trend using population-wide shared weights.
+Shared multi-scale Conv1d filters are applied over $\mathbf{h}_i$ at five designed kernel sizes: weekly ($k{=}7$), biweekly ($k{=}14$), monthly ($k{=}28$), seasonal ($k{=}91$), and trend ($k{=}182$), each with stride $k$ (non-overlapping windows). The $\lfloor T/k \rfloor$ activations per scale are concatenated across all scales and projected through two FC layers with ReLU to yield $\mathbf{c}_i \in \mathbb{R}^{d_c}$. This multi-resolution design captures temporal patterns at multiple horizons, enabling CASE to model periodicity and trend using population-wide shared weights.
 
 \textbf{Induced Set Attention Encoding.}
-The combined representation $\mathbf{x}_i = [\mathbf{c}_i \,\|\, \mathbf{e}_i]$, where $\mathbf{e}_i \in \mathbb{R}^{d_e}$ is a learned item embedding capturing semantic identity, serves as input to the set encoder. Since a user's repurchase candidates form an unordered set, we capture cross-item co-purchase dependencies using a Set Transformer encoder~\cite{lee2019set} with Induced Set Attention Blocks (ISAB), which reduce $O(N^2)$ pairwise attention to $O(N{\cdot}K)$ via $K$ learnable induced points $\mathbf{I} \in \mathbb{R}^{K \times d_h}$: induced points first attend to the item set, then items attend back. Two ISAB layers with $K{=}32$ and $H{=}4$ heads produce enriched representations $\mathbf{z}_i \in \mathbb{R}^{d_h}$.
+The combined representation $\mathbf{x}_i = [\mathbf{c}_i \,\|\, \mathbf{e}_i]$, where $\mathbf{e}_i \in \mathbb{R}^{d_e}$ is a learned item embedding capturing semantic identity, serves as input to the set encoder. Since a user's repurchase candidates form an unordered set, we capture cross-item co-purchase dependencies using a Set Transformer encoder~\cite{lee2019set} with Induced Set Attention Blocks (ISAB). ISAB reduces $O(N^2)$ pairwise attention to $O(N{\cdot}K)$ via $K$ learnable induced points $\mathbf{I} \in \mathbb{R}^{K \times d_h}$: induced points first attend to the item set, then items attend back. Two ISAB layers with $K{=}32$ and $H{=}4$ heads produce enriched representations $\mathbf{z}_i \in \mathbb{R}^{d_h}$ from $\mathbf{x}_i$.
 
 \textbf{Scoring and Training.}
-Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score $s_i$; items are ranked by $s_i$ at inference. Training minimizes binary cross-entropy, with items in $B_{l+1} \cap \mathcal{I}_u$ as positives and all others as negatives. All parameters (embeddings, CNN, ISAB, and MLP) are shared across users, making CASE's memory footprint independent of user population size.
+Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score $s_i$; items are ranked by $s_i$ at inference. Training minimizes binary cross-entropy, with items in $B_{l+1} \cap \mathcal{I}_u$ as positives and all others as negatives.
+% All parameters are shared across users, making CASE's memory footprint independent of user population size.
 
 
 \begin{table*}[t]
@@ -499,8 +500,7 @@ Each $\mathbf{z}_i$ is passed through a two-layer MLP to produce a scalar score 
 
 \subsection{Datasets}
 
-We evaluate on four datasets spanning grocery and retail domains, chosen to cover a range of catalog sizes, basket densities, and user scales. Code is available at 
-\url{https://anonymous.4open.science/r/CASE_NBRR-67BA/}
+We evaluate on four datasets spanning grocery and retail domains, chosen to cover a range of catalog sizes, basket densities, and user scales.
 
 % \begin{table}[t]
 % \centering
@@ -519,21 +519,22 @@ We evaluate on four datasets spanning grocery and retail domains, chosen to cove
 % \label{tab:dataset_stats}
 % \end{table}
 
-\textbf{Instacart}~\cite{yasserh_instacart_2017} is a large public online grocery dataset with 18,739 users, 37,522 products, and an average of 16.7 baskets per user at 10.1 items each. \textbf{TaFeng}~\cite{yu2020predicting} is a Taiwanese cash-and-carry supermarket dataset with 7,227 users and 18,703 items; its shorter histories (6.58 baskets per user) and smaller baskets (7.52 items) make it a challenging setting for cadence models. \textbf{DC} is derived from the Dunnhumby ``Carbo-Loading'' database\footnote{\url{https://www.dunnhumby.com/source-files/}} and contains 123,935 users but only 852 distinct products, with very sparse histories (1.60 baskets per user); it tests models under a closed, small item catalog. \textbf{Proprietary} is randomly sampled from our internal large-scale grocery dataset, having 10,308 users across a large amount of 88,812 items, and rich histories (11.72 items per basket and 43 baskets per user on average). 
+\textbf{Instacart}~\cite{yasserh_instacart_2017} is a public online grocery dataset with 18,739 users, 37,522 products, and an average of 16.7 baskets per user with 10.01 items each. \textbf{TaFeng}~\cite{yu2020predicting} is a Taiwanese cash-and-carry supermarket dataset with 7,227 users and 18,703 items, whose shorter histories (7.52 baskets per user) and smaller baskets (6.58 items) make it a challenging setting for cadence models. \textbf{DC} is derived from the Dunnhumby ``Carbo-Loading'' database\footnote{\url{https://www.dunnhumby.com/source-files/}} and contains 123,935 users but only 852 distinct products, with very small baskets (1.60 products per basket). \textbf{Proprietary} data is randomly sampled from our internal large-scale grocery dataset, having 10,308 users across a large amount of 88,812 items, with rich histories of 11.72 items per basket and 43 baskets per user on average. 
 
-For all datasets, we conduct train-test split based on customers and construct target basket by leave-one-out: each user’s last order is the target basket. Item candidate is defined as the intersection of the test basket with the user's training history. We preserve calendar timestamps when available (e.g. TaFeng and Proprietary). For datasets without explicit order dates (e.g., Instacart and DC), we construct relative day indices from the provided elapsed days between orders to build the $T$-day binary history representation. 
+For all datasets, we conduct train-test split based on customers and construct labels by leave-one-out: each user’s items in last order is the target basket. Item candidate is defined as the intersection of target basket with the user's history baskets. We preserve calendar timestamps when available (e.g. TaFeng and Proprietary). For datasets without explicit order dates (e.g., Instacart and DC), we construct relative dates based on provided number of days between orders to build the $T$-day binary history representation. 
 
 \subsection{Baselines}
 
 % \YC{maybe can extend baseline model description a little since we have space}
-We compare CASE against four baselines: \textbf{TIFUKNN}~\cite{hu2020modeling}, a KNN method that builds temporally decayed item vectors per user and aggregates scores from similar users, achieving strong repurchase performance but at $O(|\mathcal{U}|{\cdot}N)$ inference cost that is non-scalable in production; \textbf{DNNTSP}~\cite{yu2020predicting}, which applies GNN aggregation over an item co-occurrence graph with basket-index temporal attention; \textbf{BERT4NBR}~\cite{li2023masked}, an adaptation of BERT4Rec to the next basket recommendation setting, which applies bidirectional self-attention over basket-indexed purchase sequences; and \textbf{PIETSP}~\cite{ranjan2025scalable}, which also represents item history as calendar-time membership signals and applies permutation-equivariant mean pooling for scalable set-level aggregation, but without explicit multi-scale temporal feature extraction at the item level.
+We compare CASE against four baselines: \textbf{TIFUKNN}~\cite{hu2020modeling}, a KNN method that builds temporally decayed item vectors per user and aggregates scores from similar users, achieving strong repurchase performance but at $O(|\mathcal{U}|{\cdot}N)$ inference cost that is non-scalable in production; \textbf{DNNTSP}~\cite{yu2020predicting}, which applies GNN aggregation over an item co-occurrence graph with basket-index temporal attention; \textbf{BERT4NBR}~\cite{li2023masked}, an adaptation of BERT4Rec to NBR setting by applying bidirectional self-attention over basket-indexed purchase sequences; and \textbf{PIETSP}~\cite{ranjan2025scalable}, which applies permutation-equivariant mean pooling on top of time-step based item history and for scalable set-level aggregation, but without multi-scale temporal feature extraction at the item level.
 
 
 \subsection{Evaluation and Implementation}
 
-We report Precision@$K$, Recall@$K$, and NDCG@$K$ for $K \in \{1, 3, 5, 10\}$. Precision@$K$ measures the fraction of recommended items that are relevant, which is the primary metrics in real-world recommendation production system; Recall@$K$ measures the fraction of all relevant items captured in the top-$K$ list; NDCG@$K$ is a ranking-aware metric that assigns higher scores to relevant items appearing earlier in the list. In the NBRR production setting, a relevant item at rank 1 is more valuable than one at rank 10 since it appears at the top of the recommendation list shown to the user.
+We report three metrics at $K$ for $K \in \{1, 3, 5, 10\}$. \textbf{Precision@$K$} measures the fraction of recommended items that are relevant, which is the primary metrics in user-facing recommendation system; \textbf{Recall@$K$} measures the fraction of all relevant items captured in the top-$K$ list; \textbf{NDCG@$K$} is a ranking-aware metric that assigns higher scores to positive items appearing higher in the list. 
 
-CASE is implemented in PyTorch with item embedding dimension $d_e{=}128$, CNN output dimension $d_c{=}128$, ISAB hidden dimension $d_h{=}256$, $K{=}32$ induced points, and $H{=}4$ attention heads. We train for 30 epochs using the Adam optimizer with learning rate $10^{-3}$, weight decay $10^{-5}$, and batch size 64. Dropout of 0.1 is applied after each ISAB layer and in the MLP scorer.
+CASE is implemented in PyTorch with item embedding dimension $d_e{=}128$, CNN output dimension $d_c{=}128$, ISAB hidden dimension $d_h{=}256$, $K{=}32$ induced points, and $H{=}4$ attention heads. We train for 30 epochs using the Adam optimizer with learning rate $10^{-3}$, weight decay $10^{-5}$, and batch size 64. Dropout of 0.1 is applied after each ISAB layer and in the MLP scorer. Code is available at 
+\url{https://anonymous.4open.science/r/CASE_NBRR-67BA/}
 
 
 \section{Experimental Results}
@@ -595,9 +596,28 @@ CASE
 \end{table*}
 
 
-Table~\ref{tab:main_results} compares CASE against all baselines across four datasets. We assess the model along two axes: offline recommendation quality and scalability to production.
+Table~\ref{tab:main_results} compares CASE against four baselines across four datasets. We assess the model along two axes: offline recommendation quality and scalability to production.
 
-\textbf{Recommendation quality.} CASE achieves best or near-best performance across all datasets and cutoffs. The primary offline competitor is TIFUKNN, a well-established strong baseline for repurchase recommendation. On datasets with sparse user histories (TaFeng: 6.58 baskets/user; DC: 1.60 baskets/user), CASE leads clearly: with few transactions per user, KNN neighbor estimation is unreliable and aggregation degrades, whereas CASE's shared CNN is trained on the full population and generalizes even to sparse users. On richer datasets such as Instacart (avg.\ basket size 16.7 items), TIFUKNN leads at $K{=}1$ while CASE outperforms at $K{\geq}3$, the practically more relevant regime given that customers routinely place large baskets. On the Proprietary dataset, CASE and TIFUKNN are closely matched, which is itself a strong result given TIFUKNN's known effectiveness as a repurchase baseline. DNNTSP and BERT4NBR, despite more complex architectures relying on basket-index representations, consistently lag behind TIFUKNN across DC, Instacart, and Proprietary at low $K$, confirming that basket-index encoding is a fundamental structural limitation that neither graph-based nor transformer-based attention can overcome. Overall, gains are largest when calendar-time irregularity matters (sparser or more variable purchasing), supporting the hypothesis that explicit cadence modeling provides signal that basket-index encodings discard.
+% \begin{table}[t]
+% \centering
+% \small
+% \caption{Dataset statistics.}
+% \begin{tabular}{lrrrrr}
+% \toprule
+% Dataset & \#U & \#I & Avg\_Size\_B & Avg\_B/U & \#B \\
+% \midrule
+% DC & 123,935 & 852 & 1.60 & 14.16 & 1,754,890 \\
+% Instacart & 18,739 & 37,522 & 10.07 & 16.70 & 312,986 \\
+% Ta-Feng & 7,227 & 18,703 & 6.58 & 7.52 & 54,342 \\
+% Retail-Prop & 10,308 & 88,812 & 11.72 & 43.00 & 443,232 \\
+% \bottomrule
+% \end{tabular}
+% \label{tab:dataset_stats}
+% \end{table}
+% TIFUKNN leads at $K{=}1$ while CASE outperforms at $K{\geq}3$ and lareger, the practically more relevant regime given that customers routinely place large baskets. On the Proprietary dataset, 
+
+\textbf{Recommendation quality.} CASE achieves best or near-best performance across all datasets and cutoffs. The primary offline competitor is TIFUKNN, a well-established strong baseline for repurchase recommendation. On TaFeng dataset with sparse user histories and DC dataset with small basket context, CASE leads clearly: with few transactions or small orders per user, KNN neighbor estimation is unreliable and aggregation degrades, whereas CASE's shared CNN is trained on the full population and generalizes even to sparse information. On richer datasets such as Instacart and Proprietary, CASE and TIFUKNN are closely matched with CASE slightly leads the performance, which is itself a strong result given TIFUKNN's known effectiveness as a repurchase baseline. DNNTSP and BERT4NBR, despite more complex architectures relying on basket-index representations, consistently lag behind TIFUKNN across DC, Instacart, and Proprietary, confirming that basket-index encoding is a fundamental structural limitation that neither graph-based nor transformer-based attention can overcome. 
+% Overall, gains are largest when calendar-time irregularity matters (sparser or more variable purchasing), supporting the hypothesis that explicit cadence modeling provides signal that basket-index encodings discard.
 
 \textbf{Scalability.} CASE achieves strong offline performance while keeping parameterization independent of the user population and using sub-quadratic set interaction, which aligns better with production constraints than approaches requiring online neighbor retrieval or quadratic item-item attention. TIFUKNN, by contrast, requires $O(|\mathcal{U}|{\cdot}N)$ per-query computation to retrieve and aggregate neighbor histories. This is infeasible at tens of millions of users without approximate retrieval infrastructure that adds latency and quality degradation. CASE is the only approach in our comparison that is simultaneously competitive with the strongest offline baseline and deployable at production scale without modification.
 
@@ -605,7 +625,7 @@ Table~\ref{tab:main_results} compares CASE against all baselines across four dat
 
 The ablation study is evaluated on the Instacart dataset and isolates the contribution of each architectural component.
 
-\textbf{Temporal CNN is the dominant component.} Removing the multi-scale CNN causes the largest performance drop across all metrics: Precision@1 collapses from 0.548 to 0.333, Recall@5 from 0.395 to 0.252, and NDCG@10 from 0.524 to 0.330. This confirms that the calendar-time cadence encoding is the primary source of discriminative signal, and no amount of set-level attention can compensate for its absence. Figure~\ref{fig:embedding} visualizes item representations at different stages (CNN based temporal embedding; item representation (temporal embedding and semantic embedding combined) after set encoder). Temporal CNN separates positives and negatives by aligning items according to cadence phase, while the set encoder further refines separation by incorporating co-purchase context among items with similar cadence signals.
+\textbf{Temporal CNN is the dominant component.} Removing the multi-scale CNN causes the largest performance drop across all metrics: Precision@1 collapses from 0.548 to 0.333, Recall@5 from 0.395 to 0.252, and NDCG@10 from 0.524 to 0.330. This confirms that the calendar-time cadence encoding is the primary source of discriminative signal. Figure~\ref{fig:embedding} visualizes item representations at different stages. Temporal CNN separates positives and negatives by aligning items according to cadence phase, while the set encoder further refines separation by incorporating co-purchase context among items with similar cadence signals.
 
 \begin{figure}[h]
     \centering    
@@ -616,20 +636,20 @@ The ablation study is evaluated on the Instacart dataset and isolates the contri
     \label{fig:embedding}
 \end{figure}
 
-\textbf{Set Attention (ISAB) provides consistent gains across all $K$.} Removing the set encoder reduces performance at every cutoff: Recall@10 drops from 0.546 to 0.540 and NDCG@10 from 0.524 to 0.515. This suggests that ISAB captures co-purchase context that complements the temporal cadence signal throughout the recommendation list. Removing the item embedding also degrades performance modestly (Precision@1: 0.539 vs.\ 0.548), confirming that semantic item identity provides a complementary signal alongside cadence.
+\textbf{Set Attention provides consistent gains across $K$.} Removing the set encoder reduces performance at every cutoff: Recall@10 drops from 0.546 to 0.540 and NDCG@10 from 0.524 to 0.515. This suggests that ISAB captures co-purchase context that complements the temporal cadence signal throughout the item list. Removing the item embedding also degrades performance modestly (Precision@1: 0.539 vs.\ 0.548), confirming that semantic item identity provides a complementary signal alongside cadence within Set Attention.
 
 
-\textbf{ISAB vs.\ PermEqMean}. We additionally compare ISAB to a lighter-weight permutation-equivariant mean pooling set encoder (PermEqMean) to isolate whether attention-based set interaction is necessary beyond permutation-equivariant aggregation. CASE with ISAB maintains a consistent advantage across all cutoffs: Precision@1 (0.548 vs.\ 0.541), Recall@5 (0.395 vs.\ 0.392), and NDCG@10 (0.524 vs.\ 0.523). This suggests that the learned induced-point attention in ISAB captures richer cross-item dependencies that benefit broader recommendation lists.
+\textbf{ISAB vs.\ PermEqMean}. We additionally compare ISAB to a lighter-weight permutation-equivariant mean pooling set encoder (PermEqMean\cite{zaheer2017deep}) to isolate whether attention-based set interaction is necessary beyond permutation-equivariant aggregation. CASE with ISAB maintains a consistent advantage across all cutoffs. This suggests that the learned induced-point attention in ISAB captures richer cross-item dependencies.
 
 
 \section{Comparison with Production}
 
-We train and evaluate the model at production data scale and compare it against the deployed production system. In production, we focus on $K{\in}\{5, 10, 20\}$ as these represent the practically relevant recommendation slate sizes shown to users. CASE delivers sustained gains of 6.8--8.6\% in Precision and 7.9--9.9\% in Recall across these cutoffs, with consistent improvements in NDCG (Table~\ref{tab:lift}).
+We train the model at our production data scale and compare it against the deployed production system. In production, we focus on $K{\in}\{5, 10, 20\}$ as these represent the practically relevant recommendation slate sizes shown to users. As shown in Table~\ref{tab:lift}, CASE delivers sustained gains of 6.8--8.6\% in Precision and 7.9--9.9\% in Recall, with consistent improvements in NDCG.
 
 \begin{table}[h]
 \centering
 \small
-\caption{Relative lift (\%) of the proposed model over the production model.}
+\caption{Relative lift (\%) of CASE over production model.}
 \begin{tabular}{c|ccc}
 \toprule
 K & Precision & Recall & NDCG \\
@@ -645,7 +665,7 @@ K & Precision & Recall & NDCG \\
 
 \section{Conclusion}
 
-We presented CASE, which encodes item-level repurchase cadence via shared multi-scale convolutional filters and models cross-item dependencies through induced set attention, requiring no per-user parameters. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 8.6\% Precision and 9.9\% Recall lift over a deployed production system serving tens of millions of users. These results confirm that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for large-scale Next Basket Repurchase Recommendation.
+We presented CASE, a strong and scalable next basket repurchase recommendation that encodes item-level repurchase cadence via shared multi-scale convolutional filters and models cross-item dependencies through induced set attention. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 8.6\% Precision and 9.9\% Recall lift over a deployed production system serving tens of millions of users. These results confirm that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for large-scale Next Basket Repurchase Recommendation.
 
 
 

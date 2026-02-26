@@ -100,7 +100,7 @@
 
 % % COMMENTS
 \newif\ifcomment
-\commenttrue % comment out to hide comments
+% \commenttrue % comment out to hide comments
 \providecommand{\YC}[1]{\ifcomment{\small \color{blue} [YC: #1]}\fi} %Yanan
 \providecommand{\AR}[1]{\ifcomment{\small \color{red} [AR: #1]}\fi} %Ashish
 
@@ -157,65 +157,65 @@
 % \date{}
 % \settopmatter{authorsperrow=4}
 
-\author{Anonymous Author(s)}
+% \author{Anonymous Author(s)}
 
 
-% \author{Yanan Cao}
-% \authornote{Highlighted authors contributed equally to this research.}
-% % \orcid{1234-5678-9012}
-% \affiliation{%
-%   \institution{Walmart Global Tech}
-%   \city{Sunnyvale}
-%   \state{CA}
-%   \country{USA}
-% }
-% \email{yanan.cao@walmart.com}
+\author{Yanan Cao}
+\authornote{Highlighted authors contributed equally to this research.}
+% \orcid{1234-5678-9012}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{yanan.cao@walmart.com}
 
-% \author{Ashish Ranjan}
-% \authornotemark[1]
-% \affiliation{%
-%   \institution{Walmart Global Tech}
-%   \city{Sunnyvale}
-%   \state{CA}
-%   \country{USA}
-% }
-% \email{ashish.ranjan0@walmart.com}
+\author{Ashish Ranjan}
+\authornotemark[1]
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{ashish.ranjan0@walmart.com}
 
-% \author{Sinduja Subramaniam}
-% \affiliation{%
-%   \institution{Walmart Global Tech}
-%   \city{Sunnyvale}
-%   \state{CA}
-%   \country{USA}
-% }
-% \email{sinduja.subramaniam@walmart.com}
+\author{Sinduja Subramaniam}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{sinduja.subramaniam@walmart.com}
 
-% \author{Evren Korpeoglu}
-% \affiliation{%
-%   \institution{Walmart Global Tech}
-%   \city{Sunnyvale}
-%   \state{CA}
-%   \country{USA}
-% }
-% \email{ekorpeoglu@walmart.com}
+\author{Evren Korpeoglu}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{ekorpeoglu@walmart.com}
 
-% \author{Kaushiki Nag}
-% \affiliation{%
-%   \institution{Walmart Global Tech}
-%   \city{Sunnyvale}
-%   \state{CA}
-%   \country{USA}
-% }
-% \email{kaushiki.nag@walmart.com}
+\author{Kaushiki Nag}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{kaushiki.nag@walmart.com}
 
-% \author{Kannan Achan}
-% \affiliation{%
-%   \institution{Walmart Global Tech}
-%   \city{Sunnyvale}
-%   \state{CA}
-%   \country{USA}
-% }
-% \email{kannan.achan@walmart.com}
+\author{Kannan Achan}
+\affiliation{%
+  \institution{Walmart Global Tech}
+  \city{Sunnyvale}
+  \state{CA}
+  \country{USA}
+}
+\email{kannan.achan@walmart.com}
 
 %%
 %% By default, the full list of authors will be used in the page
@@ -223,7 +223,7 @@
 %% other information printed in the page headers. This command allows
 %% the author to define a more concise list
 %% of authors' names for this purpose.
-\renewcommand{\shortauthors}{Author et al.}
+\renewcommand{\shortauthors}{Yanan Cao et al.}
 
 %%
 %% The abstract is a short summary of the work to be presented in the
@@ -616,7 +616,7 @@ The ablation study is evaluated on the Instacart dataset and isolates the contri
     \label{fig:embedding}
 \end{figure}
 
-\textbf{Set Attention (ISAB) provides consistent gains, especially at larger $K$.} Removing the set encoder reduces performance across all $K$ values, with the effect visible at $K{=}10$: Recall@10 drops from 0.546 to 0.540 and NDCG@10 from 0.524 to 0.515. This suggests that ISAB captures co-purchase context that becomes more important as we expand the recommendation list, since at larger $K$ the temporal cadence signal alone may not distinguish between multiple items at similar phases in their repurchase cycle.
+\textbf{Set Attention (ISAB) provides consistent gains across all $K$.} Removing the set encoder reduces performance at every cutoff: Recall@10 drops from 0.546 to 0.540 and NDCG@10 from 0.524 to 0.515. This suggests that ISAB captures co-purchase context that complements the temporal cadence signal throughout the recommendation list. Removing the item embedding also degrades performance modestly (Precision@1: 0.539 vs.\ 0.548), confirming that semantic item identity provides a complementary signal alongside cadence.
 
 
 \textbf{ISAB vs.\ PermEqMean}. We additionally compare ISAB to a lighter-weight permutation-equivariant mean pooling set encoder (PermEqMean) to isolate whether attention-based set interaction is necessary beyond permutation-equivariant aggregation. CASE with ISAB maintains a consistent advantage across all cutoffs: Precision@1 (0.548 vs.\ 0.541), Recall@5 (0.395 vs.\ 0.392), and NDCG@10 (0.524 vs.\ 0.523). This suggests that the learned induced-point attention in ISAB captures richer cross-item dependencies that benefit broader recommendation lists.
@@ -645,7 +645,7 @@ K & Precision & Recall & NDCG \\
 
 \section{Conclusion}
 
-We presented CASE, which encodes item-level repurchase cadence via shared multi-scale convolutional filters and models cross-item dependencies through induced set attention, requiring no per-user parameters. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 8.6\% Precision and 9.9\% Recall lift over a deployed production system serving tens of millions of users. These results confirm that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for large-scale NBRR.
+We presented CASE, which encodes item-level repurchase cadence via shared multi-scale convolutional filters and models cross-item dependencies through induced set attention, requiring no per-user parameters. CASE achieves consistent improvements over strong baselines across three public benchmarks and delivers up to 8.6\% Precision and 9.9\% Recall lift over a deployed production system serving tens of millions of users. These results confirm that decoupling cadence encoding from user-specific parameterization is both practically necessary and empirically effective for large-scale Next Basket Repurchase Recommendation.
 
 
 
